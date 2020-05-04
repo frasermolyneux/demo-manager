@@ -45,3 +45,12 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArguments: '/target:publish /p:ApplicationVersion=$(version) /p:PublishURL="https://demomanagerclient.blob.core.windows.net/versions/" /p:UpdateEnabled=true /p:UpdateMode=Foreground /p:ProductName="XI Demo Manager" /p:OutputPath="$(build.artifactStagingDirectory)"'
+
+- task: AzureFileCopy@4
+  inputs:
+    SourcePath: '$(build.artifactStagingDirectory)'
+    azureSubscription: 'XI-Pay-As-You-Go'
+    Destination: 'AzureBlob'
+    storage: 'demomanagerclient'
+    ContainerName: 'versions'
+    BlobPrefix: 'build'
