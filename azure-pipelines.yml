@@ -18,6 +18,28 @@ steps:
   inputs:
     restoreSolution: '$(solution)'
 
+- task: Assembly-Info-NetCore@2
+  inputs:
+    Path: '$(Build.SourcesDirectory)'
+    FileNames: '**/*.csproj'
+    InsertAttributes: true
+    FileEncoding: 'auto'
+    WriteBOM: false
+    Authors: 'XtremeIdiots'
+    Company: 'XtremeIdiots'
+    Product: 'XI Demo Manager'
+    Description: 'XI Demo Manager'
+    Copyright: 'XtremeIdiots'
+    PackageLicenseUrl: 'https://github.com/frasermolyneux/XI.DemoManager/blob/master/LICENSE'
+    PackageProjectUrl: 'https://github.com/frasermolyneux/XI.DemoManager'
+    VersionNumber: '2.3.0.$(Build.BuildId)'
+    FileVersionNumber: '2.3.0.$(Build.BuildId)'
+    InformationalVersion: '2.3.0.$(Build.BuildId)'
+    PackageVersion: '2.3.0.$(Build.BuildId)'
+    LogLevel: 'verbose'
+    FailOnWarning: false
+    DisableTelemetry: false
+
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
