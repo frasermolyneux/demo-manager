@@ -41,7 +41,7 @@ steps:
 
 - task: MSBuild@1
   inputs:
-    solution: '**/*.sln'
+    solution: '$(Build.SourcesDirectory)/DemoManager.App.csproj'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArguments: '/target:publish  /p:ApplicationVersion=$(version) /p:ProductName=''XI Demo Manager'''
