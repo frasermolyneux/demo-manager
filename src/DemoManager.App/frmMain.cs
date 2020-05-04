@@ -339,6 +339,22 @@ namespace DemoManager.App
 
         private async void frmMain_Load(object sender, EventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(DemoManagerConfiguration.AuthKey))
+                using (var frm = new FrmAuthKey())
+                {
+                    frm.ShowDialog();
+                }
+
+            if (string.IsNullOrWhiteSpace(DemoManagerConfiguration.AuthKey))
+            {
+                MessageBox.Show(this, "You have not entered a Auth Key so the application cannot run - closing now",
+                    "No Auth Key",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                Application.Exit();
+            }
+
             localRepositoryView.Repository = Factory.LocalDemoRepository;
             remoteRepositoryView.Repository = Factory.RemoteDemoRepository;
 
@@ -499,22 +515,6 @@ namespace DemoManager.App
         /// <param name="e">A <see cref="T:System.EventArgs" /> that contains the event data.</param>
         protected override void OnShown(EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(DemoManagerConfiguration.AuthKey))
-                using (var frm = new FrmAuthKey())
-                {
-                    frm.ShowDialog();
-                }
-
-            if (string.IsNullOrWhiteSpace(DemoManagerConfiguration.AuthKey))
-            {
-                MessageBox.Show(this, "You have not entered a Auth Key so the application cannot run - closing now",
-                    "No Auth Key",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                Application.Exit();
-            }
-
             var configEditor = Factory.ConfigEditor;
             if (configEditor.RecordingBinds.Any(b => b.Key == null))
                 if (
