@@ -44,7 +44,7 @@ steps:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-    msbuildArguments: '/target:publish /p:ApplicationVersion=$(version) /p:ProductName="XI Demo Manager" /p:PublishDir="$(build.artifactStagingDirectory)"'
+    msbuildArguments: '/target:publish /p:ApplicationVersion=$(version) /p:ProductName="XI Demo Manager" /p:PublishDir="$(build.artifactStagingDirectory)\"'
 
 - task: AzureFileCopy@4
   inputs:
