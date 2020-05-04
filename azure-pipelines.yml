@@ -48,7 +48,7 @@ steps:
 
 - task: AzureFileCopy@4
   inputs:
-    SourcePath: '$(build.artifactStagingDirectory)'
+    SourcePath: '$(build.artifactStagingDirectory)\*'
     azureSubscription: 'XI-RG-DemoManager-Client'
     Destination: 'AzureBlob'
     storage: 'demomanagerclient'
