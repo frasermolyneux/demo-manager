@@ -44,4 +44,4 @@ steps:
     solution: '$(Build.SourcesDirectory)/src/DemoManager.App/DemoManager.App.csproj'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-    msbuildArguments: '/target:publish /p:ApplicationVersion=$(version) /p:PublishURL="https://demomanagerclient.blob.core.windows.net/versions/" /p:UpdateEnabled=true /p:UpdateMode=Foreground /p:ProductName="XI Demo Manager"'
+    msbuildArguments: '/target:publish /p:ApplicationVersion=$(version) /p:PublishURL="https://demomanagerclient.blob.core.windows.net/versions/" /p:UpdateEnabled=true /p:UpdateMode=Foreground /p:ProductName="XI Demo Manager" /p:OutputPath="$(build.artifactStagingDirectory)"'
