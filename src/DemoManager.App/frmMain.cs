@@ -339,6 +339,8 @@ namespace DemoManager.App
 
         private async void frmMain_Load(object sender, EventArgs e)
         {
+            Text = $"Demo Manager - {typeof(FrmMain).Assembly.GetName().Version}";
+
             if (string.IsNullOrWhiteSpace(DemoManagerConfiguration.AuthKey))
                 using (var frm = new FrmAuthKey())
                 {
