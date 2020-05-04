@@ -10,6 +10,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  version: '2.3.0.$(Build.BuildId)'
 
 steps:
 - task: NuGetToolInstaller@1
@@ -31,15 +32,16 @@ steps:
     Description: 'XI Demo Manager'
     Company: 'XtremeIdiots'
     Copyright: 'XtremeIdiots'
-    VersionNumber: '2.3.0.$(Build.BuildId)'
-    FileVersionNumber: '2.3.0.$(Build.BuildId)'
-    InformationalVersion: '2.3.0.$(Build.BuildId)'
+    VersionNumber: '$(version)'
+    FileVersionNumber: '$(version)'
+    InformationalVersion: '$(version)'
     LogLevel: 'verbose'
     FailOnWarning: false
     DisableTelemetry: false
 
-- task: VSBuild@1
+- task: MSBuild@1
   inputs:
-    solution: '$(solution)'
+    solution: '**/*.sln'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    msbuildArguments: '/target:publish  /p:ApplicationVersion=$(version) /p:ProductName=''XI Demo Manager'''
