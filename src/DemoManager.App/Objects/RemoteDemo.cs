@@ -24,7 +24,7 @@ namespace DemoManager.App.Objects
             GameType = info.gameType;
             Server = info.server;
 
-            if (info.Size != null)
+            if (info.size != null)
                 Size = info.size;
 
             Path = $"{DemoManagerConfiguration.BaseUrl}/ClientDownload/" + info.demoId;
