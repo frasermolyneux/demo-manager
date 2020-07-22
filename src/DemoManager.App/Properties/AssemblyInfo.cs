@@ -9,9 +9,9 @@ using log4net.Config;
 [assembly: AssemblyTitle("XI Demo Manager")]
 [assembly: AssemblyDescription("Enables easy management and sharing of CoD2, CoD4, CoD:WaW demo files.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("XtremeIdiots")]
 [assembly: AssemblyProduct("XI Demo Manager")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyCopyright("Copyright © 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
