@@ -10,56 +10,64 @@ schedules:
       include:
       - master
 
-pool:
-  vmImage: 'windows-latest'
-
 variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
   version: '2.3.0.$(Build.BuildId)'
 
-steps:
-- task: NuGetToolInstaller@1
+stages:
+- stage: dependency_check
+  jobs:
+  - template: dependency-check.yml
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
-    command: 'restore'
-    feedsToUse: 'config'
-    nugetConfigPath: './src/nuget.config'
-
-- task: Assembly-Info-NetFramework@2
-  inputs:
-    Path: '$(Build.SourcesDirectory)'
-    FileNames: |
-      **\AssemblyInfo.cs
-    InsertAttributes: false
-    FileEncoding: 'auto'
-    WriteBOM: false
-    Title: 'XI Demo Manager'
-    Product: 'XI Demo Manager'
-    Description: 'XI Demo Manager'
-    Company: 'XtremeIdiots'
-    Copyright: 'XtremeIdiots'
-    VersionNumber: '$(version)'
-    FileVersionNumber: '$(version)'
-    InformationalVersion: '$(version)'
-    LogLevel: 'verbose'
-    FailOnWarning: false
-    DisableTelemetry: false
-
-- task: MSBuild@1
-  inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-    msbuildArguments: '/target:publish /p:ApplicationVersion=$(version) /p:ProductName="XI Demo Manager" /p:PublishDir="$(build.artifactStagingDirectory)\\" /p:PublishURL=https://demomanagerclient.blob.core.windows.net/versions/ /p:UpdateEnabled=true /p:UpdateMode=Foreground'
-
-- task: AzureFileCopy@4
-  inputs:
-    SourcePath: '$(build.artifactStagingDirectory)\*'
-    azureSubscription: 'XI-Pay-As-You-Go'
-    Destination: 'AzureBlob'
-    storage: 'demomanagerclient'
-    ContainerName: 'versions'
+- stage: build
+  jobs:
+    - job: build
+      pool:
+        vmImage: 'windows-latest'
+        
+      steps:
+      - task: NuGetToolInstaller@1
+      
+      - task: NuGetCommand@2
+        inputs:
+          restoreSolution: '$(solution)'
+          command: 'restore'
+          feedsToUse: 'config'
+          nugetConfigPath: './src/nuget.config'
+      
+      - task: Assembly-Info-NetFramework@2
+        inputs:
+          Path: '$(Build.SourcesDirectory)'
+          FileNames: |
+            **\AssemblyInfo.cs
+          InsertAttributes: false
+          FileEncoding: 'auto'
+          WriteBOM: false
+          Title: 'XI Demo Manager'
+          Product: 'XI Demo Manager'
+          Description: 'XI Demo Manager'
+          Company: 'XtremeIdiots'
+          Copyright: 'XtremeIdiots'
+          VersionNumber: '$(version)'
+          FileVersionNumber: '$(version)'
+          InformationalVersion: '$(version)'
+          LogLevel: 'verbose'
+          FailOnWarning: false
+          DisableTelemetry: false
+      
+      - task: MSBuild@1
+        inputs:
+          solution: '$(solution)'
+          platform: '$(buildPlatform)'
+          configuration: '$(buildConfiguration)'
+          msbuildArguments: '/target:publish /p:ApplicationVersion=$(version) /p:ProductName="XI Demo Manager" /p:PublishDir="$(build.artifactStagingDirectory)\\" /p:PublishURL=https://demomanagerclient.blob.core.windows.net/versions/ /p:UpdateEnabled=true /p:UpdateMode=Foreground'
+      
+      - task: AzureFileCopy@4
+        inputs:
+          SourcePath: '$(build.artifactStagingDirectory)\*'
+          azureSubscription: 'XI-Pay-As-You-Go'
+          Destination: 'AzureBlob'
+          storage: 'demomanagerclient'
+          ContainerName: 'versions'
