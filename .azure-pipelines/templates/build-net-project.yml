@@ -1,0 +1,45 @@
+parameters:
+- name: jobName
+  type: string
+  default: BuildNetProject
+- name: dependsOn
+  type: object
+  default: []
+- name: projectName
+  type: string
+  default: 'library'
+- name: MajorMinorVersion
+  type: string
+  default: '1.0'
+- name: nugetConfigPath
+  type: string
+  default: ''
+
+jobs:
+- job: ${{ parameters.jobName }}
+  dependsOn: ${{ parameters.dependsOn }}
+
+  variables:
+    buildConfiguration: 'Release'
+
+  steps:
+  - task: UseDotNet@2
+    inputs:
+      version: 6.0.x
+      performMultiLevelLookup: true
+      includePreviewVersions: true
+  
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'restore'
+      projects: '**/${{ parameters.projectName }}.csproj'
+      ${{ if ne(parameters.nugetConfigPath, '') }}:
+        feedsToUse: 'config'
+        nugetConfigPath: ${{ parameters.nugetConfigPath }}
+
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: '**/${{ parameters.projectName }}.csproj'
+      arguments: '--configuration $(buildConfiguration)'
+    displayName: 'dotnet build $(buildConfiguration)'

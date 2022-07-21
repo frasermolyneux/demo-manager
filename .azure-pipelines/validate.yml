@@ -1,0 +1,20 @@
+trigger:
+  branches:
+    include:
+    - '*'
+
+schedules:
+  - cron: "0 3 * * 0"
+    displayName: Weekly Build
+    branches:
+      include:
+      - main
+
+pool: 'Dedicated'
+
+stages: 
+- stage: Build
+  jobs:
+  - template: templates/build-net-project.yml
+    parameters: 
+      projectName: 'DemoManager.App'
