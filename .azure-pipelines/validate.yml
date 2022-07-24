@@ -24,6 +24,11 @@ pool: 'Dedicated'
 stages: 
 - stage: Build
   jobs:
+  - template: templates/dependency-check.yml
+    parameters: 
+      jobName: 'DependencyCheck'
+      failOnCVSS: 4
+
   - template: templates/build-demomanager-solution.yml
     parameters: 
       solutionName: 'DemoManager.App'
