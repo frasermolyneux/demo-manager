@@ -5,9 +5,9 @@ parameters:
 - name: dependsOn
   type: object
   default: []
-- name: projectName
+- name: solutionName
   type: string
-  default: 'library'
+  default: 'solution'
 - name: MajorMinorVersion
   type: string
   default: '1.0'
@@ -21,11 +21,14 @@ jobs:
 
   variables:
     buildConfiguration: 'Release'
+    buildPlatform: 'Any CPU'
+    buildConfiguration: 'Release'
+    version: '2.3.0.$(Build.BuildId)'
 
   steps:
   - task: NuGetCommand@2
     inputs:
-      restoreSolution: '$(solution)'
+      restoreSolution: '**/${{ parameters.solutionName }}.sln'
       command: 'restore'
       ${{ if ne(parameters.nugetConfigPath, '') }}:
         feedsToUse: 'config'
@@ -33,7 +36,7 @@ jobs:
 
   - task: MSBuild@1
     inputs:
-      solution: '$(solution)'
+      solution: '**/${{ parameters.solutionName }}.sln'
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
       msbuildArguments: '/target:publish /p:ApplicationVersion=$(version) /p:ProductName="XI Demo Manager" /p:PublishDir="$(build.artifactStagingDirectory)\\" /p:PublishURL=https://demomanagerclient.blob.core.windows.net/versions/ /p:UpdateEnabled=true /p:UpdateMode=Foreground'

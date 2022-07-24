@@ -24,6 +24,6 @@ pool: 'Dedicated'
 stages: 
 - stage: Build
   jobs:
-  - template: templates/build-demomanager-project.yml
+  - template: templates/build-demomanager-solution.yml
     parameters: 
-      projectName: 'DemoManager.App'
+      solutionName: 'DemoManager.App'
