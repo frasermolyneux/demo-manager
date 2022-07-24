@@ -23,23 +23,17 @@ jobs:
     buildConfiguration: 'Release'
 
   steps:
-  - task: UseDotNet@2
+  - task: NuGetCommand@2
     inputs:
-      version: 6.0.x
-      performMultiLevelLookup: true
-      includePreviewVersions: true
-  
-  - task: DotNetCoreCLI@2
-    inputs:
+      restoreSolution: '$(solution)'
       command: 'restore'
-      projects: '**/${{ parameters.projectName }}.csproj'
       ${{ if ne(parameters.nugetConfigPath, '') }}:
         feedsToUse: 'config'
         nugetConfigPath: ${{ parameters.nugetConfigPath }}
 
-  - task: DotNetCoreCLI@2
+  - task: MSBuild@1
     inputs:
-      command: 'build'
-      projects: '**/${{ parameters.projectName }}.csproj'
-      arguments: '--configuration $(buildConfiguration)'
-    displayName: 'dotnet build $(buildConfiguration)'
+      solution: '$(solution)'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+      msbuildArguments: '/target:publish /p:ApplicationVersion=$(version) /p:ProductName="XI Demo Manager" /p:PublishDir="$(build.artifactStagingDirectory)\\" /p:PublishURL=https://demomanagerclient.blob.core.windows.net/versions/ /p:UpdateEnabled=true /p:UpdateMode=Foreground'

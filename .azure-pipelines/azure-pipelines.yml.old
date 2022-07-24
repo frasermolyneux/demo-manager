@@ -57,12 +57,12 @@ stages:
           FailOnWarning: false
           DisableTelemetry: false
       
-      #- task: MSBuild@1
-      #  inputs:
-      #    solution: '$(solution)'
-      #    platform: '$(buildPlatform)'
-      #    configuration: '$(buildConfiguration)'
-      #    msbuildArguments: '/target:publish /p:ApplicationVersion=$(version) /p:ProductName="XI Demo Manager" /p:PublishDir="$(build.artifactStagingDirectory)\\" /p:PublishURL=https://demomanagerclient.blob.core.windows.net/versions/ /p:UpdateEnabled=true /p:UpdateMode=Foreground'
+      - task: MSBuild@1
+        inputs:
+          solution: '$(solution)'
+          platform: '$(buildPlatform)'
+          configuration: '$(buildConfiguration)'
+          msbuildArguments: '/target:publish /p:ApplicationVersion=$(version) /p:ProductName="XI Demo Manager" /p:PublishDir="$(build.artifactStagingDirectory)\\" /p:PublishURL=https://demomanagerclient.blob.core.windows.net/versions/ /p:UpdateEnabled=true /p:UpdateMode=Foreground'
       
       - task: AzureFileCopy@4
         inputs:

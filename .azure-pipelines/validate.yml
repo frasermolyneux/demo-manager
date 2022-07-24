@@ -15,6 +15,6 @@ pool: 'Dedicated'
 stages: 
 - stage: Build
   jobs:
-  - template: templates/build-net-project.yml
+  - template: templates/build-demomanager-project.yml
     parameters: 
       projectName: 'DemoManager.App'
