@@ -22,7 +22,6 @@ jobs:
   variables:
     buildConfiguration: 'Release'
     buildPlatform: 'Any CPU'
-    buildConfiguration: 'Release'
     version: '2.3.0.$(Build.BuildId)'
 
   steps:
