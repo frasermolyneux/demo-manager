@@ -19,12 +19,19 @@ schedules:
       include:
       - main
 
+resources:
+  repositories:
+    - repository: ado-pipeline-templates
+      type: github
+      name: frasermolyneux/ado-pipeline-templates
+      endpoint: github.com_frasermolyneux
+
 pool: 'Dedicated'
 
 stages: 
 - stage: Build
   jobs:
-  - template: templates/dependency-check.yml
+  - template: jobs/dependency-check.yml@ado-pipeline-templates
     parameters: 
       jobName: 'DependencyCheck'
       failOnCVSS: 4
