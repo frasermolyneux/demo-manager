@@ -20,7 +20,32 @@ stages:
       solutionName: 'DemoManager'
       publishArtifact: true
 
-- stage: Deploy
+
+- stage: DeployPrdPlatform
+
+  jobs:
+  - deployment: DeployPlatformBicep
+    environment: 'demomanager-prd'
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: self
+
+            - task: AzureCLI@2
+              displayName: DeployPlatformBicep
+              inputs:
+                azureSubscription: 'spn-ado-XtremeIdiots-Public-xtremeidiots-demomanager-prd'
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                  az deployment sub create `
+                    --template-file bicep/platform.bicep `
+                    --location uksouth `
+                    --parameters @params/platform.prd.json
+
+- stage: DeployPrdArtifact
   jobs:
     - download: current
       displayName: 'Download DemoManager artifact'

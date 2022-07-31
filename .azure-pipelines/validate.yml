@@ -39,3 +39,23 @@ stages:
   - template: templates/build-demomanager-solution.yml
     parameters: 
       solutionName: 'DemoManager'
+
+- stage: ValidateBicep
+  jobs: 
+  - job: LintCode
+    displayName: Lint Code
+    steps:
+      - task: AzureCLI@2
+        name: LintBicepCode
+        displayName: Run Bicep Linter
+        inputs:
+          azureSubscription: 'spn-ado-XtremeIdiots-Public-xtremeidiots-demomanager-prd'
+          scriptType: 'pscore'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            $files = Get-ChildItem '$(Build.sourcesDirectory)/bicep/*.bicep'
+
+            foreach ($file in $files) {
+              Write-Host "Running az bicep build for '$($file.FullName)'"
+              az bicep build --file $file.FullName --stdout
+            }
