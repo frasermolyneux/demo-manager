@@ -46,15 +46,24 @@ stages:
                     --parameters @params/platform.prd.json
 
 - stage: DeployPrdArtifact
-  jobs:
-  - download: current
-    displayName: 'Download DemoManager artifact'
-    artifact: DemoManager
 
-  - task: AzureFileCopy@4
-    inputs:
-      SourcePath: '$(Pipeline.Workspace)/DemoManager/*'
-      azureSubscription: 'spn-ado-XtremeIdiots-Public-xtremeidiots-demomanager-prd'
-      Destination: 'AzureBlob'
-      storage: 'demomanagerclient'
-      ContainerName: 'versions'
+  jobs:
+  - deployment: DeployPrdArtifact
+    environment: 'demomanager-prd'
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+            - download: current
+              displayName: 'Download DemoManager artifact'
+              artifact: DemoManager
+
+            - task: AzureFileCopy@4
+              inputs:
+                SourcePath: '$(Pipeline.Workspace)/DemoManager/*'
+                azureSubscription: 'spn-ado-XtremeIdiots-Public-xtremeidiots-demomanager-prd'
+                Destination: 'AzureBlob'
+                storage: 'demomanagerclient'
+                ContainerName: 'versions'
