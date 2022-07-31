@@ -73,5 +73,5 @@ jobs:
 
   - publish: $(Build.artifactStagingDirectory)
     condition: and(succeeded(), eq('${{ parameters.publishArtifact }}', 'true'))
-    displayName: Publish ${{ parameters.projectName }} artifact
-    artifact: ${{ parameters.projectName }}
+    displayName: Publish ${{ parameters.solutionName }} artifact
+    artifact: ${{ parameters.solutionName }}
