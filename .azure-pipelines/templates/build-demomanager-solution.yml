@@ -1,7 +1,7 @@
 parameters:
 - name: jobName
   type: string
-  default: BuildNetProject
+  default: BuildDemoManager
 - name: dependsOn
   type: object
   default: []
@@ -32,6 +32,26 @@ jobs:
       ${{ if ne(parameters.nugetConfigPath, '') }}:
         feedsToUse: 'config'
         nugetConfigPath: ${{ parameters.nugetConfigPath }}
+
+  - task: Assembly-Info-NetFramework@2
+    inputs:
+      Path: '$(Build.SourcesDirectory)'
+      FileNames: |
+        **\AssemblyInfo.cs
+      InsertAttributes: false
+      FileEncoding: 'auto'
+      WriteBOM: false
+      Title: 'XI Demo Manager'
+      Product: 'XI Demo Manager'
+      Description: 'XI Demo Manager'
+      Company: 'XtremeIdiots'
+      Copyright: 'XtremeIdiots'
+      VersionNumber: '$(version)'
+      FileVersionNumber: '$(version)'
+      InformationalVersion: '$(version)'
+      LogLevel: 'verbose'
+      FailOnWarning: false
+      DisableTelemetry: false
 
   - task: MSBuild@1
     inputs:
