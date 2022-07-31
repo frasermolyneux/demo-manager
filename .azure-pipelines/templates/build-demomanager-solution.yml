@@ -1,10 +1,13 @@
 parameters:
 - name: jobName
   type: string
-  default: BuildNetProject
+  default: BuildDemoManager
 - name: dependsOn
   type: object
   default: []
+- name: publishArtifact
+  type: boolean
+  default: false
 - name: solutionName
   type: string
   default: 'solution'
@@ -22,7 +25,6 @@ jobs:
   variables:
     buildConfiguration: 'Release'
     buildPlatform: 'Any CPU'
-    buildConfiguration: 'Release'
     version: '2.3.0.$(Build.BuildId)'
 
   steps:
@@ -34,9 +36,42 @@ jobs:
         feedsToUse: 'config'
         nugetConfigPath: ${{ parameters.nugetConfigPath }}
 
+  - task: Assembly-Info-NetFramework@2
+    inputs:
+      Path: '$(Build.SourcesDirectory)'
+      FileNames: |
+        **\AssemblyInfo.cs
+      InsertAttributes: false
+      FileEncoding: 'auto'
+      WriteBOM: false
+      Title: 'XI Demo Manager'
+      Product: 'XI Demo Manager'
+      Description: 'XI Demo Manager'
+      Company: 'XtremeIdiots'
+      Copyright: 'XtremeIdiots'
+      VersionNumber: '$(version)'
+      FileVersionNumber: '$(version)'
+      InformationalVersion: '$(version)'
+      LogLevel: 'verbose'
+      FailOnWarning: false
+      DisableTelemetry: false
+
   - task: MSBuild@1
+    condition: and(succeeded(), eq('${{ parameters.publishArtifact }}', 'false'))
+    inputs:
+      solution: '**/${{ parameters.solutionName }}.sln'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+
+  - task: MSBuild@1
+    condition: and(succeeded(), eq('${{ parameters.publishArtifact }}', 'true'))
     inputs:
       solution: '**/${{ parameters.solutionName }}.sln'
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
       msbuildArguments: '/target:publish /p:ApplicationVersion=$(version) /p:ProductName="XI Demo Manager" /p:PublishDir="$(build.artifactStagingDirectory)\\" /p:PublishURL=https://demomanagerclient.blob.core.windows.net/versions/ /p:UpdateEnabled=true /p:UpdateMode=Foreground'
+
+  - publish: $(Build.artifactStagingDirectory)
+    condition: and(succeeded(), eq('${{ parameters.publishArtifact }}', 'true'))
+    displayName: Publish ${{ parameters.solutionName }} artifact
+    artifact: ${{ parameters.solutionName }}

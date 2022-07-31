@@ -15,6 +15,46 @@ resources:
 stages: 
 - stage: Build
   jobs:
-  - template: templates/build-demomanager-project.yml
+  - template: templates/build-demomanager-solution.yml
     parameters: 
-      projectName: 'DemoManager.App'
+      solutionName: 'DemoManager'
+      publishArtifact: true
+
+
+- stage: DeployPrdPlatform
+
+  jobs:
+  - deployment: DeployPlatformBicep
+    environment: 'demomanager-prd'
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: self
+
+            - task: AzureCLI@2
+              displayName: DeployPlatformBicep
+              inputs:
+                azureSubscription: 'spn-ado-XtremeIdiots-Public-xtremeidiots-demomanager-prd'
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                  az deployment sub create `
+                    --template-file bicep/platform.bicep `
+                    --location uksouth `
+                    --parameters @params/platform.prd.json
+
+- stage: DeployPrdArtifact
+  jobs:
+    - download: current
+      displayName: 'Download DemoManager artifact'
+      artifact: DemoManager
+
+    - task: AzureFileCopy@4
+      inputs:
+        SourcePath: '$(Pipeline.Workspace)/DemoManager/*'
+        azureSubscription: 'spn-ado-XtremeIdiots-Public-xtremeidiots-demomanager-prd'
+        Destination: 'AzureBlob'
+        storage: 'demomanagerclient'
+        ContainerName: 'versions'

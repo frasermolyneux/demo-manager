@@ -19,16 +19,75 @@ schedules:
       include:
       - main
 
+resources:
+  repositories:
+    - repository: ado-pipeline-templates
+      type: github
+      name: frasermolyneux/ado-pipeline-templates
+      endpoint: github.com_frasermolyneux
+
 pool: 'Dedicated'
 
 stages: 
 - stage: Build
   jobs:
-  - template: templates/dependency-check.yml
+  - template: jobs/dependency-check.yml@ado-pipeline-templates
     parameters: 
       jobName: 'DependencyCheck'
       failOnCVSS: 4
 
   - template: templates/build-demomanager-solution.yml
     parameters: 
-      solutionName: 'DemoManager.App'
+      solutionName: 'DemoManager'
+
+- stage: ValidateBicep
+  jobs: 
+  - job: LintCode
+    displayName: Lint Code
+    steps:
+      - task: AzureCLI@2
+        name: LintBicepCode
+        displayName: Run Bicep Linter
+        inputs:
+          azureSubscription: 'spn-ado-XtremeIdiots-Public-xtremeidiots-demomanager-prd'
+          scriptType: 'pscore'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            $files = Get-ChildItem '$(Build.sourcesDirectory)/bicep/*.bicep'
+
+            foreach ($file in $files) {
+              Write-Host "Running az bicep build for '$($file.FullName)'"
+              az bicep build --file $file.FullName --stdout
+            }
+
+  - deployment: ValidateBicepCode
+    dependsOn: [LintCode]
+    environment: 'demomanager-prd'
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - task: AzureCLI@2
+              name: RunPreflightValidation
+              inputs:
+                azureSubscription: 'spn-ado-XtremeIdiots-Public-xtremeidiots-demomanager-prd'
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                  az deployment sub validate `
+                    --template-file bicep/platform.bicep `
+                    --location 'uksouth' `
+                    --parameters @params/platform.prd.json
+
+            - task: AzureCLI@2
+              name: RunWhatIfDeploy
+              inputs:
+                azureSubscription: 'spn-ado-XtremeIdiots-Public-xtremeidiots-demomanager-prd'
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                  az deployment sub what-if `
+                    --template-file bicep/platform.bicep `
+                    --location 'uksouth' `
+                    --parameters @params/platform.prd.json
