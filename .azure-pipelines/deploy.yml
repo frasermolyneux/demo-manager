@@ -48,6 +48,18 @@ stages:
                     --parameters @params/platform.prd.json `
                       parKeyVaultCreateMode=$keyVaultCreateMode
 
+            - task: AzureCLI@2
+              displayName: DeployPlatformPermissions
+              inputs:
+                azureSubscription: 'spn-ado-XtremeIdiots-Public-xtremeidiots-demomanager-prd'
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                addSpnToEnvironment: true
+                inlineScript: |
+                  $spn = (az ad sp show --id $env:servicePrincipalId) | ConvertFrom-Json
+                  $storageAccount = (az storage account show --resource-group rg-demomanager-prd-uksouth --name demomanagerclient) | ConvertFrom-Json
+                  az role assignment create --assignee $spn.appId --role 'Storage Blob Data Contributor' --scope $storageAccount.id | Out-Null
+
 - stage: DeployPrdArtifact
 
   jobs:
