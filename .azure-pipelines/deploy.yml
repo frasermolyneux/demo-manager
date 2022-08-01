@@ -58,6 +58,7 @@ stages:
       runOnce:
         deploy:
           steps:
+            - checkout: self
 
             - download: current
               displayName: 'Download DemoManager artifact'
