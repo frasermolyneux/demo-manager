@@ -8,7 +8,7 @@ param parLoggingSubscriptionId string
 param parLoggingResourceGroupName string
 param parLoggingWorkspaceName string
 
-param parKeyVaultCreateModeIsDefault bool = false
+param parKeyVaultCreateMode string = 'recover'
 
 param parTags object
 
@@ -34,7 +34,7 @@ module keyVault 'br:acrmxplatformprduksouth.azurecr.io/bicep/modules/keyvault:V2
   params: {
     parKeyVaultName: varKeyVaultName
     parLocation: parLocation
-    parKeyVaultCreateMode: (parKeyVaultCreateModeIsDefault == true) ? 'default' : 'recover'
+    parKeyVaultCreateMode: parKeyVaultCreateMode
     parTags: parTags
   }
 }
