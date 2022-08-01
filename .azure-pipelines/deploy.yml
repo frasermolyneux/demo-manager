@@ -1,3 +1,8 @@
+parameters:
+- name: keyVaultCreateModeIsDefault
+  type: boolean
+  default: false
+
 trigger: none
 pr: none
 
@@ -43,7 +48,7 @@ stages:
                   az deployment sub create `
                     --template-file bicep/platform.bicep `
                     --location uksouth `
-                    --parameters @params/platform.prd.json
+                    --parameters @params/platform.prd.json parKeyVaultCreateModeIsDefault ${{ parameters.keyVaultCreateModeIsDefault }}
 
 - stage: DeployPrdArtifact
 
