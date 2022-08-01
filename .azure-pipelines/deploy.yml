@@ -51,7 +51,8 @@ stages:
                   az deployment sub create `
                     --template-file bicep/platform.bicep `
                     --location uksouth `
-                    --parameters @params/platform.prd.json parKeyVaultCreateMode '${{ parameters.keyVaultCreateMode }}'
+                    --parameters @params/platform.prd.json `
+                      parKeyVaultCreateMode='${{ parameters.keyVaultCreateMode }}'
 
 - stage: DeployPrdArtifact
 

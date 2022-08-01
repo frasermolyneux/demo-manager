@@ -78,7 +78,8 @@ stages:
                   az deployment sub validate `
                     --template-file bicep/platform.bicep `
                     --location 'uksouth' `
-                    --parameters @params/platform.prd.json
+                    --parameters @params/platform.prd.json `
+                      parKeyVaultCreateMode='recover'
 
             - task: AzureCLI@2
               name: RunWhatIfDeploy
@@ -90,4 +91,5 @@ stages:
                   az deployment sub what-if `
                     --template-file bicep/platform.bicep `
                     --location 'uksouth' `
-                    --parameters @params/platform.prd.json
+                    --parameters @params/platform.prd.json `
+                      parKeyVaultCreateMode='recover'
