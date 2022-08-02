@@ -76,10 +76,12 @@ stages:
               displayName: 'Download DemoManager artifact'
               artifact: DemoManager
 
-            - task: AzureFileCopy@4
+            - task: AzureCLI@2
+              displayName: CopyArtifact
               inputs:
-                SourcePath: '$(Pipeline.Workspace)/DemoManager/*'
                 azureSubscription: 'spn-ado-XtremeIdiots-Public-xtremeidiots-demomanager-prd'
-                Destination: 'AzureBlob'
-                storage: 'demomanagerclient'
-                ContainerName: 'versions'
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                addSpnToEnvironment: true
+                inlineScript: |
+                  az storage blob upload-batch --destination versions --source $(Pipeline.Workspace)/DemoManager --account-name demomanagerclient --auth-mode login
