@@ -84,4 +84,4 @@ stages:
                 scriptLocation: 'inlineScript'
                 addSpnToEnvironment: true
                 inlineScript: |
-                  az storage blob upload-batch --destination versions --source $(Pipeline.Workspace)/DemoManager --account-name demomanagerclient --auth-mode login
+                  az storage blob upload-batch --destination versions --source $(Pipeline.Workspace)/DemoManager --account-name demomanagerclient --auth-mode login --overwrite
