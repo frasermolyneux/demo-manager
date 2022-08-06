@@ -1,0 +1,87 @@
+parameters:
+- name: azureSubscription
+  type: string
+- name: environment
+  type: string
+- name: environmentName
+  type: string
+- name: environmentTag
+  type: string
+- name: storageAccountName
+  type: string
+
+stages:
+- stage: Deploy${{ parameters.environmentName }}
+  jobs:
+  - deployment: Deploy${{ parameters.environmentName }}PlatformBicep
+    environment: ${{ parameters.environment }}
+
+    workspace:
+      clean: all
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: self
+
+            - task: AzureCLI@2
+              displayName: Deploy${{ parameters.environmentName }}PlatformBicep
+              inputs:
+                azureSubscription: ${{ parameters.azureSubscription }}
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                  if ($null -eq (az keyvault show --name 'kv-demomgr-${{ parameters.environmentTag }}-uksouth')) { $keyVaultCreateMode = 'default' } else { $keyVaultCreateMode = 'recover' }
+
+                  az deployment sub create `
+                    --template-file bicep/platform.bicep `
+                    --location uksouth `
+                    --parameters @params/platform.${{ parameters.environmentTag }}.json `
+                      parKeyVaultCreateMode=$keyVaultCreateMode
+
+  - job: Deploy${{ parameters.environmentName }}PlatformPermissions
+    dependsOn: ['Deploy${{ parameters.environmentName }}PlatformBicep']
+
+    workspace:
+      clean: all
+
+    steps:
+      - task: AzureCLI@2
+        displayName: DeployPlatformPermissions
+        inputs:
+          azureSubscription: ${{ parameters.azureSubscription }}
+          scriptType: 'pscore'
+          scriptLocation: 'inlineScript'
+          addSpnToEnvironment: true
+          inlineScript: |
+            $spn = (az ad sp show --id $env:servicePrincipalId) | ConvertFrom-Json
+            $storageAccount = (az storage account show --resource-group rg-demomanager-${{ parameters.environmentTag }}-uksouth --name ${{ parameters.storageAccountName }}) | ConvertFrom-Json
+            az role assignment create --assignee $spn.appId --role 'Storage Blob Data Contributor' --scope $storageAccount.id | Out-Null
+
+  - deployment: Deploy${{ parameters.environmentName }}Artifact
+    dependsOn: ['Deploy${{ parameters.environmentName }}PlatformPermissions']
+    environment: ${{ parameters.environment }}
+
+    workspace:
+      clean: all
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: self
+
+            - download: current
+              displayName: 'Download DemoManager artifact'
+              artifact: DemoManager
+
+            - task: AzureCLI@2
+              displayName: CopyArtifact
+              inputs:
+                azureSubscription: ${{ parameters.azureSubscription }}
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                addSpnToEnvironment: true
+                inlineScript: |
+                  az storage blob upload-batch --destination versions --source $(Pipeline.Workspace)/DemoManager --account-name ${{ parameters.storageAccountName }} --auth-mode login --overwrite

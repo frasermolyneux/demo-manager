@@ -11,9 +11,6 @@ parameters:
 - name: solutionName
   type: string
   default: 'solution'
-- name: MajorMinorVersion
-  type: string
-  default: '1.0'
 - name: nugetConfigPath
   type: string
   default: ''
