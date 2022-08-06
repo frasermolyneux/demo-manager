@@ -41,7 +41,7 @@ stages:
   - template: jobs/bicep-lint-code.yml@ado-pipeline-templates
     parameters: 
       jobName: 'BicepLinter'
-      azureSubscription: 'spn-ado-Personal-Public-devtest'
+      azureSubscription: 'spn-ado-XtremeIdiots-Public-devtest'
 
   - template: templates/bicep-environment-validation.yml
     parameters:
