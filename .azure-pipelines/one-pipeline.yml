@@ -54,7 +54,7 @@ stages:
 - template: templates/deploy-environment.yml
   parameters:
     azureSubscription: 'spn-ado-XtremeIdiots-Public-xtremeidiots-demomanager-prd'
-    environment: 'demomanager-dev'
+    environment: 'demomanager-prd'
     environmentName: 'Prd'
     environmentTag: 'prd'
     storageAccountName: 'demomanagerclient'
