@@ -27,7 +27,7 @@ resource defaultResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = 
   properties: {}
 }
 
-module keyVault 'br:acrmxplatformprduksouth.azurecr.io/bicep/modules/keyvault:V2022.08.01.6369' = {
+module keyVault 'br:acrmxplatformprduksouth.azurecr.io/bicep/modules/keyvault:latest' = {
   name: '${varDeploymentPrefix}-keyVault'
   scope: resourceGroup(defaultResourceGroup.name)
 
@@ -39,7 +39,7 @@ module keyVault 'br:acrmxplatformprduksouth.azurecr.io/bicep/modules/keyvault:V2
   }
 }
 
-module appInsights 'br:acrmxplatformprduksouth.azurecr.io/bicep/modules/appinsights:V2022.08.01.6369' = {
+module appInsights 'br:acrmxplatformprduksouth.azurecr.io/bicep/modules/appinsights:latest' = {
   name: '${varDeploymentPrefix}-appInsights'
   scope: resourceGroup(defaultResourceGroup.name)
 
