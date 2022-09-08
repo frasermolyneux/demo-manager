@@ -33,6 +33,7 @@ jobs:
               scriptLocation: 'inlineScript'
               inlineScript: |
                 az deployment sub validate `
+                  --name 'platformDemoManager${{ parameters.environmentName }}' `
                   --template-file bicep/platform.bicep `
                   --location 'uksouth' `
                   --parameters @params/platform.${{ parameters.environmentTag }}.json `
@@ -46,6 +47,7 @@ jobs:
               scriptLocation: 'inlineScript'
               inlineScript: |
                 az deployment sub what-if `
+                  --name 'platformDemoManager${{ parameters.environmentName }}' `
                   --template-file bicep/platform.bicep `
                   --location 'uksouth' `
                   --parameters @params/platform.${{ parameters.environmentTag }}.json `

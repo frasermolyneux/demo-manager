@@ -35,6 +35,7 @@ stages:
                   if ($null -eq (az keyvault show --name 'kv-demomgr-${{ parameters.environmentTag }}-uksouth')) { $keyVaultCreateMode = 'default' } else { $keyVaultCreateMode = 'recover' }
 
                   az deployment sub create `
+                    --name 'platformDemoManager${{ parameters.environmentName }}' `
                     --template-file bicep/platform.bicep `
                     --location uksouth `
                     --parameters @params/platform.${{ parameters.environmentTag }}.json `
