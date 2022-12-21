@@ -46,7 +46,7 @@ stages:
   - template: templates/bicep-environment-validation.yml
     parameters:
       dependsOn: [BicepLinter]
-      azureSubscription: 'spn-ado-XtremeIdiots-Public-xtremeidiots-demomanager-prd'
+      azureSubscription: 'spn-ado-XtremeIdiots-Public-demomanager-prd'
       environment: 'demomanager-prd'
       environmentName: 'Prd'
       environmentTag: 'prd'
@@ -54,7 +54,7 @@ stages:
 - ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
   - template: templates/deploy-environment.yml
     parameters:
-      azureSubscription: 'spn-ado-XtremeIdiots-Public-xtremeidiots-demomanager-prd'
+      azureSubscription: 'spn-ado-XtremeIdiots-Public-demomanager-prd'
       environment: 'demomanager-prd'
       environmentName: 'Prd'
       environmentTag: 'prd'
