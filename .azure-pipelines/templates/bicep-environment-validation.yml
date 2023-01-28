@@ -8,8 +8,6 @@ parameters:
   type: string
 - name: environmentName
   type: string
-- name: environmentTag
-  type: string
   
 jobs:
 - deployment: ValidateBicepAgainst${{ parameters.environmentName }}Environment
@@ -36,7 +34,7 @@ jobs:
                   --name 'platformDemoManager${{ parameters.environmentName }}' `
                   --template-file bicep/platform.bicep `
                   --location 'uksouth' `
-                  --parameters @params/platform.${{ parameters.environmentTag }}.json `
+                  --parameters @params/platform.${{ parameters.environmentName }}.json `
                     parKeyVaultCreateMode='recover'
 
           - task: AzureCLI@2
@@ -50,5 +48,5 @@ jobs:
                   --name 'platformDemoManager${{ parameters.environmentName }}' `
                   --template-file bicep/platform.bicep `
                   --location 'uksouth' `
-                  --parameters @params/platform.${{ parameters.environmentTag }}.json `
+                  --parameters @params/platform.${{ parameters.environmentName }}.json `
                     parKeyVaultCreateMode='recover'

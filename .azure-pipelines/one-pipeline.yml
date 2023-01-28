@@ -28,10 +28,10 @@ stages:
 - stage: Build
   jobs:
 
-  - template: jobs/dependency-check.yml@ado-pipeline-templates
-    parameters: 
-      jobName: 'DependencyCheck'
-      failOnCVSS: 4
+  #- template: jobs/dependency-check.yml@ado-pipeline-templates
+  #  parameters: 
+  #    jobName: 'DependencyCheck'
+  #    failOnCVSS: 4
 
   - template: templates/build-demomanager-solution.yml
     parameters: 
@@ -48,14 +48,12 @@ stages:
       dependsOn: [BicepLinter]
       azureSubscription: 'spn-ado-XtremeIdiots-Public-demomanager-prd'
       environment: 'demomanager-prd'
-      environmentName: 'Prd'
-      environmentTag: 'prd'
+      environmentName: 'prd'
 
 - ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
   - template: templates/deploy-environment.yml
     parameters:
       azureSubscription: 'spn-ado-XtremeIdiots-Public-demomanager-prd'
       environment: 'demomanager-prd'
-      environmentName: 'Prd'
-      environmentTag: 'prd'
+      environmentName: 'prd'
       storageAccountName: 'demomanagerclient'

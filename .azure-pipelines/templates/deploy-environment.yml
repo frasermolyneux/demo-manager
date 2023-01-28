@@ -5,8 +5,6 @@ parameters:
   type: string
 - name: environmentName
   type: string
-- name: environmentTag
-  type: string
 - name: storageAccountName
   type: string
 
@@ -32,13 +30,13 @@ stages:
                 scriptType: 'pscore'
                 scriptLocation: 'inlineScript'
                 inlineScript: |
-                  if ($null -eq (az keyvault show --name 'kv-demomgr-${{ parameters.environmentTag }}-uksouth')) { $keyVaultCreateMode = 'default' } else { $keyVaultCreateMode = 'recover' }
+                  if ($null -eq (az keyvault show --name 'kv-demomgr-${{ parameters.environmentName }}-uksouth')) { $keyVaultCreateMode = 'default' } else { $keyVaultCreateMode = 'recover' }
 
                   az deployment sub create `
                     --name 'platformDemoManager${{ parameters.environmentName }}' `
                     --template-file bicep/platform.bicep `
                     --location uksouth `
-                    --parameters @params/platform.${{ parameters.environmentTag }}.json `
+                    --parameters @params/platform.${{ parameters.environmentName }}.json `
                       parKeyVaultCreateMode=$keyVaultCreateMode
 
   - job: Deploy${{ parameters.environmentName }}PlatformPermissions
@@ -57,7 +55,7 @@ stages:
           addSpnToEnvironment: true
           inlineScript: |
             $spn = (az ad sp show --id $env:servicePrincipalId) | ConvertFrom-Json
-            $storageAccount = (az storage account show --resource-group rg-demomanager-${{ parameters.environmentTag }}-uksouth --name ${{ parameters.storageAccountName }}) | ConvertFrom-Json
+            $storageAccount = (az storage account show --resource-group rg-demomanager-${{ parameters.environmentName }}-uksouth --name ${{ parameters.storageAccountName }}) | ConvertFrom-Json
             az role assignment create --assignee $spn.appId --role 'Storage Blob Data Contributor' --scope $storageAccount.id | Out-Null
 
   - deployment: Deploy${{ parameters.environmentName }}Artifact
