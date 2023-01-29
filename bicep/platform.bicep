@@ -1,22 +1,26 @@
 targetScope = 'subscription'
 
 // Parameters
-param parLocation string
 param parEnvironment string
+param parLocation string
+param parInstance string
 
-param parLoggingSubscriptionId string
-param parLoggingResourceGroupName string
-param parLoggingWorkspaceName string
+param parStorageAccountName string
 
-param parKeyVaultCreateMode string = 'recover'
+param parLogging object
 
 param parTags object
 
+// Dynamic params from pipeline invocation
+param parKeyVaultCreateMode string = 'recover'
+
 // Variables
-var varDeploymentPrefix = 'platformDemoManager' //Prevent deployment naming conflicts
-var varResourceGroupName = 'rg-demomanager-${parEnvironment}-${parLocation}'
-var varKeyVaultName = 'kv-demomgr-${parEnvironment}-${parLocation}'
-var varAppInsightsName = 'ai-demomanager-${parEnvironment}-${parLocation}'
+var varEnvironmentUniqueId = uniqueString('demo-manager', parEnvironment, parInstance)
+var varDeploymentPrefix = 'platform-${varEnvironmentUniqueId}' //Prevent deployment naming conflicts
+
+var varResourceGroupName = 'rg-demo-manager-${parEnvironment}-${parLocation}-${parInstance}'
+var varKeyVaultName = 'kv-${varEnvironmentUniqueId}-${parLocation}'
+var varAppInsightsName = 'ai-demo-manager-${parEnvironment}-${parLocation}-${parInstance}'
 
 // Platform
 resource defaultResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -47,9 +51,9 @@ module appInsights 'br:acrty7og2i6qpv3s.azurecr.io/bicep/modules/appinsights:lat
     parAppInsightsName: varAppInsightsName
     parKeyVaultName: keyVault.outputs.outKeyVaultName
     parLocation: parLocation
-    parLoggingSubscriptionId: parLoggingSubscriptionId
-    parLoggingResourceGroupName: parLoggingResourceGroupName
-    parLoggingWorkspaceName: parLoggingWorkspaceName
+    parLoggingSubscriptionId: parLogging.SubscriptionId
+    parLoggingResourceGroupName: parLogging.WorkspaceResourceGroupName
+    parLoggingWorkspaceName: parLogging.WorkspaceName
     parTags: parTags
   }
 }
@@ -60,5 +64,6 @@ module storageAccount 'artifactStorage/storageAccount.bicep' = {
 
   params: {
     parLocation: parLocation
+    parStorageAccountName: parStorageAccountName
   }
 }

@@ -10,7 +10,7 @@ parameters:
   type: string
   
 jobs:
-- deployment: ValidateBicepAgainst${{ parameters.environmentName }}Environment
+- deployment: validate_bicep_against_${{ parameters.environmentName }}_environment
   dependsOn: ${{ parameters.dependsOn }}
   environment: ${{ parameters.environment }}
 
@@ -30,11 +30,13 @@ jobs:
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
               inlineScript: |
+                $config = (Get-Content params/platform.${{ parameters.environmentName }}.json | ConvertFrom-Json)
+
                 az deployment sub validate `
-                  --name 'platformDemoManager${{ parameters.environmentName }}' `
+                  --name "demo-manager-platform-$($config.parameters.parEnvironment.value)-$($config.parameters.parInstance.value)" `
                   --template-file bicep/platform.bicep `
-                  --location 'uksouth' `
-                  --parameters @params/platform.${{ parameters.environmentName }}.json `
+                  --location $config.parameters.parLocation.value `
+                  --parameters @params/platform.$($config.parameters.parEnvironment.value).json `
                     parKeyVaultCreateMode='recover'
 
           - task: AzureCLI@2
@@ -44,9 +46,11 @@ jobs:
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
               inlineScript: |
-                az deployment sub what-if `
-                  --name 'platformDemoManager${{ parameters.environmentName }}' `
+                $config = (Get-Content params/platform.${{ parameters.environmentName }}.json | ConvertFrom-Json)
+
+                az deployment sub validate `
+                  --name "demo-manager-platform-$($config.parameters.parEnvironment.value)-$($config.parameters.parInstance.value)" `
                   --template-file bicep/platform.bicep `
-                  --location 'uksouth' `
-                  --parameters @params/platform.${{ parameters.environmentName }}.json `
+                  --location $config.parameters.parLocation.value `
+                  --parameters @params/platform.$($config.parameters.parEnvironment.value).json `
                     parKeyVaultCreateMode='recover'

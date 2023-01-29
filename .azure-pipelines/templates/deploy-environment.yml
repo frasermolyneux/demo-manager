@@ -5,13 +5,11 @@ parameters:
   type: string
 - name: environmentName
   type: string
-- name: storageAccountName
-  type: string
 
 stages:
-- stage: Deploy${{ parameters.environmentName }}
+- stage: deploy_${{ parameters.environmentName }}
   jobs:
-  - deployment: Deploy${{ parameters.environmentName }}PlatformBicep
+  - deployment: deploy_${{ parameters.environmentName }}_platform
     environment: ${{ parameters.environment }}
 
     workspace:
@@ -24,42 +22,49 @@ stages:
             - checkout: self
 
             - task: AzureCLI@2
-              displayName: Deploy${{ parameters.environmentName }}PlatformBicep
+              displayName: deploy_${{ parameters.environmentName }}_platform_bicep
               inputs:
                 azureSubscription: ${{ parameters.azureSubscription }}
                 scriptType: 'pscore'
                 scriptLocation: 'inlineScript'
                 inlineScript: |
-                  if ($null -eq (az keyvault show --name 'kv-demomgr-${{ parameters.environmentName }}-uksouth')) { $keyVaultCreateMode = 'default' } else { $keyVaultCreateMode = 'recover' }
+                  $config = (Get-Content params/platform.${{ parameters.environmentName }}.json | ConvertFrom-Json)
+
+                  $deletedKeyVaults = az keyvault list-deleted --query '[].properties.vaultId' | ConvertFrom-Json
+                  $isDeleted = $deletedKeyVaults | where {$_ -match "rg-demo-manager-$($config.parameters.parEnvironment.value)-$($config.parameters.parLocation.value)-$($config.parameters.parInstance.value)"}
+
+                  $keyVaultCreateMode = "default"
+                  if ($isDeleted -ne $null) {
+                    $keyVaultCreateMode = "recover"
+                  }
 
                   az deployment sub create `
-                    --name 'platformDemoManager${{ parameters.environmentName }}' `
+                    --name "demo-manager-platform-$($config.parameters.parEnvironment.value)-$($config.parameters.parInstance.value)" `
                     --template-file bicep/platform.bicep `
-                    --location uksouth `
-                    --parameters @params/platform.${{ parameters.environmentName }}.json `
+                    --location $config.parameters.parEnvironment.value `
+                    --parameters @params/platform.$($config.parameters.parEnvironment.value).json `
                       parKeyVaultCreateMode=$keyVaultCreateMode
 
-  - job: Deploy${{ parameters.environmentName }}PlatformPermissions
-    dependsOn: ['Deploy${{ parameters.environmentName }}PlatformBicep']
+            - task: AzureCLI@2
+              displayName: DeployPlatformPermissions
+              inputs:
+                azureSubscription: ${{ parameters.azureSubscription }}
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                addSpnToEnvironment: true
+                inlineScript: |
+                  $config = (Get-Content params/platform.${{ parameters.environmentName }}.json | ConvertFrom-Json)
 
-    workspace:
-      clean: all
+                  $spn = (az ad sp show --id $env:servicePrincipalId) | ConvertFrom-Json
 
-    steps:
-      - task: AzureCLI@2
-        displayName: DeployPlatformPermissions
-        inputs:
-          azureSubscription: ${{ parameters.azureSubscription }}
-          scriptType: 'pscore'
-          scriptLocation: 'inlineScript'
-          addSpnToEnvironment: true
-          inlineScript: |
-            $spn = (az ad sp show --id $env:servicePrincipalId) | ConvertFrom-Json
-            $storageAccount = (az storage account show --resource-group rg-demomanager-${{ parameters.environmentName }}-uksouth --name ${{ parameters.storageAccountName }}) | ConvertFrom-Json
-            az role assignment create --assignee $spn.appId --role 'Storage Blob Data Contributor' --scope $storageAccount.id | Out-Null
+                  $storageAccount = (az storage account show --resource-group "rg-demo-manager-$($config.parameters.parEnvironment.value)-$($config.parameters.parLocation.value)-$($config.parameters.parInstance.value)" `
+                    --name $($config.parameters.parStorageAccountName.value)) | ConvertFrom-Json
 
-  - deployment: Deploy${{ parameters.environmentName }}Artifact
-    dependsOn: ['Deploy${{ parameters.environmentName }}PlatformPermissions']
+                  az role assignment create --assignee $spn.appId --role 'Storage Blob Data Contributor' --scope $storageAccount.id | Out-Null
+
+
+  - deployment: deploy_${{ parameters.environmentName }}_artifact
+    dependsOn: ['deploy_${{ parameters.environmentName }}_platform']
     environment: ${{ parameters.environment }}
 
     workspace:
@@ -83,4 +88,6 @@ stages:
                 scriptLocation: 'inlineScript'
                 addSpnToEnvironment: true
                 inlineScript: |
-                  az storage blob upload-batch --destination versions --source $(Pipeline.Workspace)/DemoManager --account-name ${{ parameters.storageAccountName }} --auth-mode login --overwrite
+                  $config = (Get-Content params/platform.${{ parameters.environmentName }}.json | ConvertFrom-Json)
+
+                  az storage blob upload-batch --destination versions --source $(Pipeline.Workspace)/DemoManager --account-name $($config.parameters.parStorageAccountName.value)) --auth-mode login --overwrite

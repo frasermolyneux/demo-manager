@@ -1,10 +1,11 @@
 targetScope = 'resourceGroup'
 
 // Parameters
+param parStorageAccountName string
 param parLocation string
 
 resource storageAccounts 'Microsoft.Storage/storageAccounts@2021-09-01' = {
-  name: 'demomanagerclient'
+  name: parStorageAccountName
   location: parLocation
 
   sku: {
