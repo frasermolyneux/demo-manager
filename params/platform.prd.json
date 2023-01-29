@@ -14,13 +14,6 @@
         "parStorageAccountName": {
             "value": "demomanagerclient"
         },
-        "parLogging": {
-            "value": {
-                "SubscriptionId": "d68448b0-9947-46d7-8771-baa331a3063a",
-                "WorkspaceResourceGroupName": "rg-platform-logging-prd-uksouth-01",
-                "WorkspaceName": "log-platform-prd-uksouth-01"
-            }
-        },
         "parTags": {
             "value": {
                 "Environment": "prd",

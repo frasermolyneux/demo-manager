@@ -7,20 +7,13 @@ param parInstance string
 
 param parStorageAccountName string
 
-param parLogging object
-
 param parTags object
-
-// Dynamic params from pipeline invocation
-param parKeyVaultCreateMode string = 'recover'
 
 // Variables
 var varEnvironmentUniqueId = uniqueString('demo-manager', parEnvironment, parInstance)
 var varDeploymentPrefix = 'platform-${varEnvironmentUniqueId}' //Prevent deployment naming conflicts
 
 var varResourceGroupName = 'rg-demo-manager-${parEnvironment}-${parLocation}-${parInstance}'
-var varKeyVaultName = 'kv-${varEnvironmentUniqueId}-${parLocation}'
-var varAppInsightsName = 'ai-demo-manager-${parEnvironment}-${parLocation}-${parInstance}'
 
 // Platform
 resource defaultResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -29,33 +22,6 @@ resource defaultResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = 
   tags: parTags
 
   properties: {}
-}
-
-module keyVault 'br:acrty7og2i6qpv3s.azurecr.io/bicep/modules/keyvault:latest' = {
-  name: '${varDeploymentPrefix}-keyVault'
-  scope: resourceGroup(defaultResourceGroup.name)
-
-  params: {
-    parKeyVaultName: varKeyVaultName
-    parLocation: parLocation
-    parKeyVaultCreateMode: parKeyVaultCreateMode
-    parTags: parTags
-  }
-}
-
-module appInsights 'br:acrty7og2i6qpv3s.azurecr.io/bicep/modules/appinsights:latest' = {
-  name: '${varDeploymentPrefix}-appInsights'
-  scope: resourceGroup(defaultResourceGroup.name)
-
-  params: {
-    parAppInsightsName: varAppInsightsName
-    parKeyVaultName: keyVault.outputs.outKeyVaultName
-    parLocation: parLocation
-    parLoggingSubscriptionId: parLogging.SubscriptionId
-    parLoggingResourceGroupName: parLogging.WorkspaceResourceGroupName
-    parLoggingWorkspaceName: parLogging.WorkspaceName
-    parTags: parTags
-  }
 }
 
 module storageAccount 'artifactStorage/storageAccount.bicep' = {

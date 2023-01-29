@@ -30,20 +30,11 @@ stages:
                 inlineScript: |
                   $config = (Get-Content params/platform.${{ parameters.environmentName }}.json | ConvertFrom-Json)
 
-                  $deletedKeyVaults = az keyvault list-deleted --query '[].properties.vaultId' | ConvertFrom-Json
-                  $isDeleted = $deletedKeyVaults | where {$_ -match "rg-demo-manager-$($config.parameters.parEnvironment.value)-$($config.parameters.parLocation.value)-$($config.parameters.parInstance.value)"}
-
-                  $keyVaultCreateMode = "default"
-                  if ($isDeleted -ne $null) {
-                    $keyVaultCreateMode = "recover"
-                  }
-
                   az deployment sub create `
                     --name "demo-manager-platform-$($config.parameters.parEnvironment.value)-$($config.parameters.parInstance.value)" `
                     --template-file bicep/platform.bicep `
                     --location $config.parameters.parEnvironment.value `
-                    --parameters @params/platform.$($config.parameters.parEnvironment.value).json `
-                      parKeyVaultCreateMode=$keyVaultCreateMode
+                    --parameters @params/platform.$($config.parameters.parEnvironment.value).json
 
             - task: AzureCLI@2
               displayName: DeployPlatformPermissions

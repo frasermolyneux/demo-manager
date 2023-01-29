@@ -36,8 +36,7 @@ jobs:
                   --name "demo-manager-platform-$($config.parameters.parEnvironment.value)-$($config.parameters.parInstance.value)" `
                   --template-file bicep/platform.bicep `
                   --location $config.parameters.parLocation.value `
-                  --parameters @params/platform.$($config.parameters.parEnvironment.value).json `
-                    parKeyVaultCreateMode='recover'
+                  --parameters @params/platform.$($config.parameters.parEnvironment.value).json
 
           - task: AzureCLI@2
             name: RunWhatIfDeploy
@@ -52,5 +51,4 @@ jobs:
                   --name "demo-manager-platform-$($config.parameters.parEnvironment.value)-$($config.parameters.parInstance.value)" `
                   --template-file bicep/platform.bicep `
                   --location $config.parameters.parLocation.value `
-                  --parameters @params/platform.$($config.parameters.parEnvironment.value).json `
-                    parKeyVaultCreateMode='recover'
+                  --parameters @params/platform.$($config.parameters.parEnvironment.value).json
