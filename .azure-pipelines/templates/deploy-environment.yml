@@ -33,7 +33,7 @@ stages:
                   az deployment sub create `
                     --name "demo-manager-platform-$($config.parameters.parEnvironment.value)-$($config.parameters.parInstance.value)" `
                     --template-file bicep/platform.bicep `
-                    --location $config.parameters.parEnvironment.value `
+                    --location $config.parameters.parLocation.value `
                     --parameters @params/platform.$($config.parameters.parEnvironment.value).json
 
             - task: AzureCLI@2
