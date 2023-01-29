@@ -48,8 +48,8 @@ stages:
 
                   $spn = (az ad sp show --id $env:servicePrincipalId) | ConvertFrom-Json
 
-                  $storageAccount = (az storage account show --resource-group "rg-demo-manager-$($config.parameters.parEnvironment.value)-$($config.parameters.parLocation.value)-$($config.parameters.parInstance.value)" `
-                    --name $config.parameters.parStorageAccountName.value | ConvertFrom-Json)
+                  $storageAccount = az storage account show --resource-group "rg-demo-manager-$($config.parameters.parEnvironment.value)-$($config.parameters.parLocation.value)-$($config.parameters.parInstance.value)" `
+                    --name $config.parameters.parStorageAccountName.value | ConvertFrom-Json
 
                   az role assignment create --assignee $spn.appId --role 'Storage Blob Data Contributor' --scope $storageAccount.id | Out-Null
 
