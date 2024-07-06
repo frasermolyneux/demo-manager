@@ -31,10 +31,10 @@ stages:
                   $config = (Get-Content params/platform.${{ parameters.environmentName }}.json | ConvertFrom-Json)
 
                   az deployment sub create `
-                    --name "demo-manager-platform-$($config.parameters.parEnvironment.value)-$($config.parameters.parInstance.value)" `
+                    --name "demo-manager-platform-$($config.parameters.environment.value)-$($config.parameters.instance.value)" `
                     --template-file bicep/platform.bicep `
-                    --location $config.parameters.parLocation.value `
-                    --parameters @params/platform.$($config.parameters.parEnvironment.value).json
+                    --location $config.parameters.location.value `
+                    --parameters @params/platform.$($config.parameters.environment.value).json
 
             - task: AzureCLI@2
               displayName: DeployPlatformPermissions
@@ -48,8 +48,8 @@ stages:
 
                   $spn = (az ad sp show --id $env:servicePrincipalId) | ConvertFrom-Json
 
-                  $storageAccount = az storage account show --resource-group "rg-demo-manager-$($config.parameters.parEnvironment.value)-$($config.parameters.parLocation.value)-$($config.parameters.parInstance.value)" `
-                    --name $config.parameters.parStorageAccountName.value | ConvertFrom-Json
+                  $storageAccount = az storage account show --resource-group "rg-demo-manager-$($config.parameters.environment.value)-$($config.parameters.location.value)-$($config.parameters.instance.value)" `
+                    --name $config.parameters.storageAccountName.value | ConvertFrom-Json
 
                   az role assignment create --assignee $spn.appId --role 'Storage Blob Data Contributor' --scope $storageAccount.id | Out-Null
 
@@ -81,4 +81,4 @@ stages:
                 inlineScript: |
                   $config = (Get-Content params/platform.${{ parameters.environmentName }}.json | ConvertFrom-Json)
 
-                  az storage blob upload-batch --destination versions --source $(Pipeline.Workspace)/DemoManager --account-name $config.parameters.parStorageAccountName.value --auth-mode login --overwrite
+                  az storage blob upload-batch --destination versions --source $(Pipeline.Workspace)/DemoManager --account-name $config.parameters.storageAccountName.value --auth-mode login --overwrite

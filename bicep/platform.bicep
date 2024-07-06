@@ -1,25 +1,28 @@
 targetScope = 'subscription'
 
 // Parameters
-param parEnvironment string
-param parLocation string
-param parInstance string
+@description('The environment for the resources')
+param environment string
 
-param parStorageAccountName string
+@description('The location to deploy the resources')
+param location string
+param instance string
 
-param parTags object
+param storageAccountName string
+
+param tags object
 
 // Variables
-var varEnvironmentUniqueId = uniqueString('demo-manager', parEnvironment, parInstance)
-var varDeploymentPrefix = 'platform-${varEnvironmentUniqueId}' //Prevent deployment naming conflicts
+var environmentUniqueId = uniqueString('demo-manager', environment, instance)
+var varDeploymentPrefix = 'platform-${environmentUniqueId}' //Prevent deployment naming conflicts
 
-var varResourceGroupName = 'rg-demo-manager-${parEnvironment}-${parLocation}-${parInstance}'
+var resourceGroupName = 'rg-demo-manager-${environment}-${location}-${instance}'
 
 // Platform
 resource defaultResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: varResourceGroupName
-  location: parLocation
-  tags: parTags
+  name: resourceGroupName
+  location: location
+  tags: tags
 
   properties: {}
 }
@@ -29,7 +32,7 @@ module storageAccount 'artifactStorage/storageAccount.bicep' = {
   scope: resourceGroup(defaultResourceGroup.name)
 
   params: {
-    parLocation: parLocation
-    parStorageAccountName: parStorageAccountName
+    location: location
+    storageAccountName: storageAccountName
   }
 }

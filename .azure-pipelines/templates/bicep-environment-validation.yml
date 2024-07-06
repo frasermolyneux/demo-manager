@@ -33,10 +33,10 @@ jobs:
                 $config = (Get-Content params/platform.${{ parameters.environmentName }}.json | ConvertFrom-Json)
 
                 az deployment sub validate `
-                  --name "demo-manager-platform-$($config.parameters.parEnvironment.value)-$($config.parameters.parInstance.value)" `
+                  --name "demo-manager-platform-$($config.parameters.environment.value)-$($config.parameters.instance.value)" `
                   --template-file bicep/platform.bicep `
-                  --location $config.parameters.parLocation.value `
-                  --parameters @params/platform.$($config.parameters.parEnvironment.value).json
+                  --location $config.parameters.location.value `
+                  --parameters @params/platform.$($config.parameters.environment.value).json
 
           - task: AzureCLI@2
             name: RunWhatIfDeploy
@@ -48,7 +48,7 @@ jobs:
                 $config = (Get-Content params/platform.${{ parameters.environmentName }}.json | ConvertFrom-Json)
 
                 az deployment sub validate `
-                  --name "demo-manager-platform-$($config.parameters.parEnvironment.value)-$($config.parameters.parInstance.value)" `
+                  --name "demo-manager-platform-$($config.parameters.environment.value)-$($config.parameters.instance.value)" `
                   --template-file bicep/platform.bicep `
-                  --location $config.parameters.parLocation.value `
-                  --parameters @params/platform.$($config.parameters.parEnvironment.value).json
+                  --location $config.parameters.location.value `
+                  --parameters @params/platform.$($config.parameters.environment.value).json

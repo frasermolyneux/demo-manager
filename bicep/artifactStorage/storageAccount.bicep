@@ -1,12 +1,14 @@
 targetScope = 'resourceGroup'
 
 // Parameters
-param parStorageAccountName string
-param parLocation string
+param storageAccountName string
+
+@description('The location to deploy the resources')
+param location string
 
 resource storageAccounts 'Microsoft.Storage/storageAccounts@2021-09-01' = {
-  name: parStorageAccountName
-  location: parLocation
+  name: storageAccountName
+  location: location
 
   sku: {
     name: 'Standard_RAGRS'
