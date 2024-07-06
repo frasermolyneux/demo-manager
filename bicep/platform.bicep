@@ -14,7 +14,7 @@ param tags object
 
 // Variables
 var environmentUniqueId = uniqueString('demo-manager', environment, instance)
-var varDeploymentPrefix = 'platform-${environmentUniqueId}' //Prevent deployment naming conflicts
+var deploymentPrefix = 'platform-${environmentUniqueId}' //Prevent deployment naming conflicts
 
 var resourceGroupName = 'rg-demo-manager-${environment}-${location}-${instance}'
 
@@ -28,7 +28,7 @@ resource defaultResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = 
 }
 
 module storageAccount 'artifactStorage/storageAccount.bicep' = {
-  name: '${varDeploymentPrefix}-storageAccount'
+  name: '${deploymentPrefix}-storageAccount'
   scope: resourceGroup(defaultResourceGroup.name)
 
   params: {
