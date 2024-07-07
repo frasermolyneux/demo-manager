@@ -4,7 +4,7 @@ targetScope = 'resourceGroup'
 param storageAccountName string
 
 @description('The location to deploy the resources')
-param location string
+param location string = resourceGroup().location
 
 resource storageAccounts 'Microsoft.Storage/storageAccounts@2021-09-01' = {
   name: storageAccountName
