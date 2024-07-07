@@ -32,7 +32,7 @@ stages:
 
                   az deployment sub create `
                     --name "demo-manager-platform-$($config.parameters.environment.value)-$($config.parameters.instance.value)" `
-                    --template-file bicep/platform.bicep `
+                    --template-file bicep/main.bicep `
                     --location $config.parameters.location.value `
                     --parameters @params/platform.$($config.parameters.environment.value).json
 

@@ -34,7 +34,7 @@ jobs:
 
                 az deployment sub validate `
                   --name "demo-manager-platform-$($config.parameters.environment.value)-$($config.parameters.instance.value)" `
-                  --template-file bicep/platform.bicep `
+                  --template-file bicep/main.bicep `
                   --location $config.parameters.location.value `
                   --parameters @params/platform.$($config.parameters.environment.value).json
 
@@ -49,6 +49,6 @@ jobs:
 
                 az deployment sub validate `
                   --name "demo-manager-platform-$($config.parameters.environment.value)-$($config.parameters.instance.value)" `
-                  --template-file bicep/platform.bicep `
+                  --template-file bicep/main.bicep `
                   --location $config.parameters.location.value `
                   --parameters @params/platform.$($config.parameters.environment.value).json
