@@ -1,0 +1,29 @@
+trigger:
+  branches:
+    include:
+    - '*'
+    exclude:
+    - 'docs/*'
+
+pr:
+  autoCancel: false
+  branches:
+    include:
+    - '*'
+    exclude:
+    - 'docs/*'
+
+pool:
+  vmImage: ubuntu-latest
+
+resources:
+  repositories:
+    - repository: ado-pipeline-templates
+      type: github
+      name: frasermolyneux/ado-pipeline-templates
+      endpoint: github.com_frasermolyneux
+
+stages:
+  - stage: build
+    jobs:
+      - template: jobs/devops-secure-scanning.yml@ado-pipeline-templates
