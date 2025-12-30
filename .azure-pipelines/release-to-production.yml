@@ -14,7 +14,7 @@ schedules:
 pr: none
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
 
 resources:
   repositories:
