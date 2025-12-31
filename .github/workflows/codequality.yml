@@ -76,11 +76,15 @@ jobs:
 
       - name: Restore NuGet packages
         shell: pwsh
-        run: nuget restore "${{ github.workspace }}\src\DemoManager.sln"
+        run: |
+          Set-Location "${{ github.workspace }}\src"
+          nuget restore "DemoManager.sln"
 
       - name: Build solution
         shell: pwsh
-        run: msbuild "${{ github.workspace }}\src\DemoManager.sln" /p:Configuration=Release /p:Platform="Any CPU"
+        run: |
+          Set-Location "${{ github.workspace }}\src"
+          msbuild "DemoManager.sln" /p:Configuration=Release /p:Platform="Any CPU"
 
       - name: End SonarCloud analysis
         if: ${{ always() }}
