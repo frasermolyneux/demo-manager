@@ -17,8 +17,8 @@ jobs:
     name: Code Quality
     runs-on: windows-latest
     env:
-      SONAR_CACHE_DIR: ~/.sonar/cache
-      SONAR_SCANNER_DIR: ${{ runner.temp }}/sonar-scanner
+      SONAR_CACHE_DIR: ${{ github.workspace }}\.sonar\cache
+      SONAR_SCANNER_DIR: ${{ github.workspace }}\.sonar\scanner
       SONAR_PROJECT_KEY: frasermolyneux_demo-manager
       SONAR_ORGANIZATION: frasermolyneux
       SONAR_HOST_URL: https://sonarcloud.io
