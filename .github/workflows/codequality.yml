@@ -72,11 +72,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           Set-Location "${{ github.workspace }}\src"
-          "${{ env.SONAR_SCANNER_DIR }}\dotnet-sonarscanner" begin `
-            /k:"${{ env.SONAR_PROJECT_KEY }}" `
-            /o:"${{ env.SONAR_ORGANIZATION }}" `
-            /d:sonar.token="$env:SONAR_TOKEN" `
-            /d:sonar.host.url="${{ env.SONAR_HOST_URL }}"
+          & "${{ env.SONAR_SCANNER_DIR }}\dotnet-sonarscanner" begin /k:"${{ env.SONAR_PROJECT_KEY }}" /o:"${{ env.SONAR_ORGANIZATION }}" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.host.url="${{ env.SONAR_HOST_URL }}"
 
       - name: Restore NuGet packages
         shell: pwsh
@@ -93,7 +89,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           Set-Location "${{ github.workspace }}\src"
-          "${{ env.SONAR_SCANNER_DIR }}\dotnet-sonarscanner" end /d:sonar.token="$env:SONAR_TOKEN"
+          & "${{ env.SONAR_SCANNER_DIR }}\dotnet-sonarscanner" end /d:sonar.token="$env:SONAR_TOKEN"
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v4
