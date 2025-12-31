@@ -14,11 +14,88 @@ permissions:
 
 jobs:
   quality:
-    uses: frasermolyneux/actions/.github/workflows/codequality.yml@main
-    with:
-      sonar-project-key: frasermolyneux_demo-manager
-      build-target: dotnet-ci
-      dotnet-version: 4.8.x
-      src-folder: src
-    secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    name: Code Quality
+    runs-on: windows-latest
+    env:
+      SONAR_CACHE_DIR: ~/.sonar/cache
+      SONAR_SCANNER_DIR: ${{ runner.temp }}/sonar-scanner
+      SONAR_PROJECT_KEY: frasermolyneux_demo-manager
+      SONAR_ORGANIZATION: frasermolyneux
+      SONAR_HOST_URL: https://sonarcloud.io
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          java-version: 17
+          distribution: zulu
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.SONAR_CACHE_DIR }}
+          key: ${{ runner.os }}-sonar-cache
+
+      - name: Cache SonarCloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.SONAR_SCANNER_DIR }}
+          key: ${{ runner.os }}-sonar-scanner
+
+      - name: Install SonarCloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "${{ env.SONAR_SCANNER_DIR }}" | Out-Null
+          dotnet tool update dotnet-sonarscanner --tool-path "${{ env.SONAR_SCANNER_DIR }}"
+
+      - name: Set up MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Set up NuGet
+        uses: NuGet/setup-nuget@v1.2.1
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: csharp
+
+      - name: Begin SonarCloud analysis
+        shell: pwsh
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          Set-Location "${{ github.workspace }}\src"
+          "${{ env.SONAR_SCANNER_DIR }}\dotnet-sonarscanner" begin `
+            /k:"${{ env.SONAR_PROJECT_KEY }}" `
+            /o:"${{ env.SONAR_ORGANIZATION }}" `
+            /d:sonar.token="$env:SONAR_TOKEN" `
+            /d:sonar.host.url="${{ env.SONAR_HOST_URL }}"
+
+      - name: Restore NuGet packages
+        shell: pwsh
+        run: nuget restore "${{ github.workspace }}\src\DemoManager.sln"
+
+      - name: Build solution
+        shell: pwsh
+        run: msbuild "${{ github.workspace }}\src\DemoManager.sln" /p:Configuration=Release /p:Platform="Any CPU"
+
+      - name: End SonarCloud analysis
+        if: ${{ always() }}
+        shell: pwsh
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          Set-Location "${{ github.workspace }}\src"
+          "${{ env.SONAR_SCANNER_DIR }}\dotnet-sonarscanner" end /d:sonar.token="$env:SONAR_TOKEN"
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:csharp
