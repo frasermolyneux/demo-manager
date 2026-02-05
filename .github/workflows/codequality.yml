@@ -11,13 +11,13 @@ on:
       - main
     types: [opened, synchronize, reopened, ready_for_review]
 
-permissions:
-  contents: read
-  actions: read
-  security-events: write
 
 jobs:
   quality:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
     name: Code Quality
     runs-on: windows-latest
     env:
@@ -105,11 +105,11 @@ jobs:
           category: /language:csharp
 
   dependency-review:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: read
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6

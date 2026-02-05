@@ -6,11 +6,11 @@ on:
     branches:
       - 'feature/*'
 
-permissions:
-  contents: read  # This is required for actions/checkout
   
 jobs:
   dotnet-ci:
+    permissions:
+      contents: read  # This is required for actions/checkout
     runs-on: ubuntu-latest
 
     steps:
