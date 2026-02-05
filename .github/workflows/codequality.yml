@@ -1,11 +1,15 @@
 name: Code Quality
 
 on:
+  schedule:
+    - cron: "0 3 * * 1" # Monday 3am UTC
   push:
     branches:
       - main
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches:
+      - main
+    types: [opened, synchronize, reopened, ready_for_review]
 
 permissions:
   contents: read
@@ -99,3 +103,15 @@ jobs:
         uses: github/codeql-action/analyze@v4
         with:
           category: /language:csharp
+
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
