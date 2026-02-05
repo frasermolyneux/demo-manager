@@ -104,6 +104,13 @@ jobs:
         with:
           category: /language:csharp
 
+  devops-secure-scanning:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    uses: frasermolyneux/actions/.github/workflows/devops-secure-scanning.yml@main
+
   dependency-review:
     permissions:
       contents: read
