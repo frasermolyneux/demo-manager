@@ -116,8 +116,16 @@ jobs:
   dependency-review:
     permissions:
       contents: read
-      pull-requests: read
-    if: github.event_name == 'pull_request'
+      pull-requests: write
+      if: github.event_name == 'pull_request'
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v6
+        - name: Dependency Review
+          uses: actions/dependency-review-action@v4
+          with:
+            comment-summary-in-pr: always
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
