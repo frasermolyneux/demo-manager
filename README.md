@@ -1,40 +1,37 @@
 # Demo Manager
 
-[![Build Status](https://dev.azure.com/frasermolyneux/XtremeIdiots-Public/_apis/build/status/demo-manager.OnePipeline?repoName=frasermolyneux%2Fdemo-manager&branchName=main)](https://dev.azure.com/frasermolyneux/XtremeIdiots-Public/_build/latest?definitionId=178&repoName=frasermolyneux%2Fdemo-manager&branchName=main)
+[![Code Quality](https://github.com/frasermolyneux/demo-manager/actions/workflows/codequality.yml/badge.svg)](https://github.com/frasermolyneux/demo-manager/actions/workflows/codequality.yml)
+[![Pull Request Validation](https://github.com/frasermolyneux/demo-manager/actions/workflows/pull-request-validation.yml/badge.svg)](https://github.com/frasermolyneux/demo-manager/actions/workflows/pull-request-validation.yml)
+[![Feature Development](https://github.com/frasermolyneux/demo-manager/actions/workflows/feature-development.yml/badge.svg)](https://github.com/frasermolyneux/demo-manager/actions/workflows/feature-development.yml)
+[![Merge to Main](https://github.com/frasermolyneux/demo-manager/actions/workflows/merge-to-main.yml/badge.svg)](https://github.com/frasermolyneux/demo-manager/actions/workflows/merge-to-main.yml)
+[![Dependabot Automerge](https://github.com/frasermolyneux/demo-manager/actions/workflows/dependabot-automerge.yml/badge.svg)](https://github.com/frasermolyneux/demo-manager/actions/workflows/dependabot-automerge.yml)
+
+## Documentation
+
+* [Docs Index](/docs/index.md) - Entry point for project documentation.
 
 ## Overview
 
-This repository contains the Demo Manager that is used by the [XtremeIdiots](https://www.xtremeidiots.com) gaming community. It is a desktop 'Click Once' application that enables players and admins to share demos that have been recorded from `Call of Duty 2`, `Call of Duty 4` and `Call of Duty: World at War`.
+Legacy Windows desktop ClickOnce app for the XtremeIdiots gaming community to browse, upload, and replay Call of Duty 2/4/5 demos. Uses .NET Framework 4.8 WinForms with a shared `DemoManager.Library` for demo parsing (Huffman decode, config extraction) and local file handling. Integrates with the XtremeIdiots portal APIs to list and upload demos and with local game installs to detect paths and launch replays.
 
-The demo manager uses APIs provided by the `xtremeidiots-portal` project to store the metadata and demo files.
+# Demo Manager
 
----
+[![Code Quality](https://github.com/frasermolyneux/demo-manager/actions/workflows/codequality.yml/badge.svg)](https://github.com/frasermolyneux/demo-manager/actions/workflows/codequality.yml)
+[![PR Validation](https://github.com/frasermolyneux/demo-manager/actions/workflows/pull-request-validation.yml/badge.svg)](https://github.com/frasermolyneux/demo-manager/actions/workflows/pull-request-validation.yml)
+[![Feature Development](https://github.com/frasermolyneux/demo-manager/actions/workflows/feature-development.yml/badge.svg)](https://github.com/frasermolyneux/demo-manager/actions/workflows/feature-development.yml)
+[![Merge to Main](https://github.com/frasermolyneux/demo-manager/actions/workflows/merge-to-main.yml/badge.svg)](https://github.com/frasermolyneux/demo-manager/actions/workflows/merge-to-main.yml)
 
-## Related Projects
+## Documentation
 
-* [frasermolyneux/azure-landing-zones](https://github.com/frasermolyneux/azure-landing-zones) - The deploy service principal is managed by this project, as is the workload subscription.
-* [frasermolyneux/xtremeidiots-portal](https://github.com/frasermolyneux/xtremeidiots-portal) - The xtremeidiots-portal project provides APIs for metadata and demo file storage.
+* [Repository index](docs/index.md) - Quick links back to project documentation.
 
----
+## Overview
 
-## Solution
-
-The solution is considered legacy at this point and only will be updated with features with the aim of decommissioning or security related changes.
-
----
-
-## Pipelines
-
-The `one-pipeline` is within the `.azure-pipelines` folder and output is visible on the [frasermolyneux/XtremeIdiots-Public](https://dev.azure.com/frasermolyneux/XtremeIdiots-Public/_build?definitionId=178) Azure DevOps project.
-The `.github` folder contains `dependabot` configuration and some code quality workflows.
-
----
+Windows Forms ClickOnce client used by the XtremeIdiots community to upload and share Call of Duty 2/4/WaW demo recordings. The app discovers locally installed games, lets players manage demo metadata, and uploads recordings to the portal APIs for long-term storage. Legacy maintenance only; changes focus on decommissioning support and security hygiene.
 
 ## Contributing
 
 Please read the [contributing](CONTRIBUTING.md) guidance; this is a learning and development project.
-
----
 
 ## Security
 
