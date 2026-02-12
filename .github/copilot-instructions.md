@@ -1,15 +1,43 @@
 # Copilot Instructions
 
-- Purpose: legacy Windows Forms ClickOnce client that discovers local Call of Duty 2/4/WaW installs, reads demo files, and uploads metadata + binaries to the XtremeIdiots portal APIs.
-- Tech stack: .NET Framework 4.8, WinForms UI in `src/DemoManager.App`; shared parsing/helpers in `src/DemoManager.Library`; packages restored via `packages.config` (Newtonsoft.Json, log4net).
-- Build/run: open `src/DemoManager.sln` in Visual Studio and build; primary entry point `DemoManager.App/Program.cs` launches `FrmMain`. ClickOnce settings live in `DemoManager.App.csproj` (`InstallUrl` points to blob storage).
-- Key flows:
-  - Local discovery uses `Helpers/GameDetection.cs` (registry lookup) and `LocalDemoRepository` to enumerate demos from installed games.
-  - Uploads use `Repositories/RemoteDemoRepository` with auth key + base URL from `Configuration/DemoManagerConfiguration.cs`; progress surfaced via `UploadProgressChanged`.
-  - Demo parsing lives in `Reader/DemoReader.cs`, `DemoMessage.cs`, and Huffman helpers to extract config strings from demo files.
-  - Playback uses `Helpers/DemoPlayback.cs` to start game executables with demo arguments.
-- Objects/models: see `Objects/` for `IDemo`, `LocalDemo`, `RemoteDemo`, `Game`, `Mod`, `UserMap`, `GameVersion`. Use `GameVersion.GetGame()` helpers to derive paths/extensions.
-- Logging: log4net config at `DemoManager.App/log4net.config` (copied to output). Keep changes minimal—app is maintenance/decommission mode.
-- Pipelines: GitHub workflows under `.github/workflows` handle code quality and PR validation; legacy Azure DevOps pipeline exists under `.azure-pipelines`.
-- Testing: no automated tests; validate manually by opening demos and exercising upload/download flows. Be cautious editing Huffman/bit-level logic—small changes can break decoding.
-- Conventions: prefer ASCII; avoid altering ClickOnce/publish settings unless necessary; keep auth headers (`demo-manager-auth-key`) and endpoints consistent with portal backend.
+## Project Overview
+
+Legacy Windows Forms ClickOnce client that discovers local Call of Duty 2/4/WaW installs, reads demo files, and uploads metadata and binaries to the XtremeIdiots portal APIs. The app is in maintenance/decommission mode.
+
+## Tech Stack
+
+- .NET Framework 4.8, WinForms UI
+- Solution: `src/DemoManager.sln`
+- Projects: `DemoManager.App` (UI), `DemoManager.Library` (shared parsing/helpers), `DemoManager.Debug` (diagnostics)
+- NuGet packages restored via `packages.config` (Newtonsoft.Json, log4net)
+- Infrastructure: Bicep templates in `bicep/` for Azure artifact storage
+
+## Build & Run
+
+- Open `src/DemoManager.sln` in Visual Studio and build (requires .NET Framework 4.8 SDK)
+- Entry point: `DemoManager.App/Program.cs` launches `FrmMain`
+- ClickOnce publish settings in `DemoManager.App.csproj` (`InstallUrl` points to blob storage)
+- No automated tests; validate manually by opening demos and exercising upload/download flows
+
+## Architecture & Key Flows
+
+- **Game detection**: `Helpers/GameDetection.cs` uses registry lookup; `LocalDemoRepository` enumerates demos from installed games
+- **Remote uploads**: `Repositories/RemoteDemoRepository` with auth key + base URL from `Configuration/DemoManagerConfiguration.cs`; progress via `UploadProgressChanged`
+- **Demo parsing**: `Reader/DemoReader.cs`, `DemoMessage.cs`, and Huffman helpers extract config strings from demo binary files
+- **Playback**: `Helpers/DemoPlayback.cs` starts game executables with demo arguments
+- **Models**: `Objects/` contains `IDemo`, `LocalDemo`, `RemoteDemo`, `Game`, `Mod`, `UserMap`, `GameVersion`
+
+## CI/CD
+
+- GitHub Actions workflows in `.github/workflows/` for build-and-test, code quality, PR verification, merge-to-main, and dependabot automerge
+- Legacy Azure DevOps pipeline in `.azure-pipelines/`
+- Bicep infrastructure templates in `bicep/` with environment parameters in `params/`
+
+## Conventions
+
+- Prefer ASCII encoding
+- Avoid altering ClickOnce/publish settings unless necessary
+- Keep auth headers (`demo-manager-auth-key`) and API endpoints consistent with the portal backend
+- Logging via log4net; config at `DemoManager.App/log4net.config`
+- Be cautious editing Huffman/bit-level parsing logic — small changes can break demo decoding
+- Keep changes minimal; this is a maintenance-mode application
