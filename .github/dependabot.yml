@@ -7,10 +7,24 @@ updates:
     assignees: ["frasermolyneux"]
     directory: "/src"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "sunday"
+      time: "07:15"
+      timezone: "Etc/UTC"
+    groups:
+      nuget:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     assignees: ["frasermolyneux"]
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "sunday"
+      time: "07:15"
+      timezone: "Etc/UTC"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
