@@ -1,7 +1,7 @@
 resource "azurerm_storage_account" "artifact_storage" {
   name                = var.storage_account_name
-  resource_group_name = azurerm_resource_group.default.name
-  location            = azurerm_resource_group.default.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
   tags                = var.tags
 
   account_tier             = "Standard"
@@ -27,10 +27,10 @@ resource "azurerm_storage_container" "versions" {
 
 import {
   to = azurerm_storage_account.artifact_storage
-  id = "/subscriptions/${var.subscription_id}/resourceGroups/rg-${var.workload}-${var.environment}-${var.location}-${var.instance}/providers/Microsoft.Storage/storageAccounts/${var.storage_account_name}"
+  id = "/subscriptions/${var.subscription_id}/resourceGroups/rg-${var.workload}-${var.environment}-${var.location}/providers/Microsoft.Storage/storageAccounts/${var.storage_account_name}"
 }
 
 import {
   to = azurerm_storage_container.versions
-  id = "/subscriptions/${var.subscription_id}/resourceGroups/rg-${var.workload}-${var.environment}-${var.location}-${var.instance}/providers/Microsoft.Storage/storageAccounts/${var.storage_account_name}/blobServices/default/containers/versions"
+  id = "/subscriptions/${var.subscription_id}/resourceGroups/rg-${var.workload}-${var.environment}-${var.location}/providers/Microsoft.Storage/storageAccounts/${var.storage_account_name}/blobServices/default/containers/versions"
 }

@@ -46,10 +46,21 @@ namespace DemoManager.App
                     var jsonString = JsonConvert.SerializeObject(repositoryDemo);
                     LogHelper.Instance.LogInfo(jsonString);
                 }
+
+                TelemetryHelper.Instance.TrackEvent("LocalRepositoryLoaded",
+                    new System.Collections.Generic.Dictionary<string, string>
+                    {
+                        { "DemoCount", localRepositoryView.Repository.Demos.Count().ToString() }
+                    });
             }
             catch (Exception e)
             {
                 LogHelper.Instance.LogException("Failed to reload local demo repository", e);
+                TelemetryHelper.Instance.TrackException(e,
+                    new System.Collections.Generic.Dictionary<string, string>
+                    {
+                        { "Operation", "ReloadLocalRepository" }
+                    });
 
                 MessageBox.Show(this,
                     $"Failed to reload local demo repository.\n{e.GetDeepestException().Message}",
@@ -73,10 +84,21 @@ namespace DemoManager.App
                     var jsonString = JsonConvert.SerializeObject(repositoryDemo);
                     LogHelper.Instance.LogInfo(jsonString);
                 }
+
+                TelemetryHelper.Instance.TrackEvent("RemoteRepositoryLoaded",
+                    new System.Collections.Generic.Dictionary<string, string>
+                    {
+                        { "DemoCount", remoteRepositoryView.Repository.Demos.Count().ToString() }
+                    });
             }
             catch (Exception e)
             {
                 LogHelper.Instance.LogException("Failed to reload remote demo repository", e);
+                TelemetryHelper.Instance.TrackException(e,
+                    new System.Collections.Generic.Dictionary<string, string>
+                    {
+                        { "Operation", "ReloadRemoteRepository" }
+                    });
 
                 MessageBox.Show(this,
                     $"Failed to reload remote demo repository.\n{e.GetDeepestException().Message}",
@@ -221,6 +243,14 @@ namespace DemoManager.App
             _isDemoRunning = true;
             _runningGameVersion = demo.Version;
 
+            TelemetryHelper.Instance.TrackEvent("DemoPlayStarted",
+                new System.Collections.Generic.Dictionary<string, string>
+                {
+                    { "GameVersion", demo.Version.ToString() },
+                    { "Map", demo.Map ?? "unknown" },
+                    { "Mod", demo.Mod ?? "none" }
+                });
+
             await Task.Run(() =>
             {
                 Factory.DemoPlayback.Start(demo)
@@ -228,6 +258,12 @@ namespace DemoManager.App
             });
 
             _isDemoRunning = false;
+
+            TelemetryHelper.Instance.TrackEvent("DemoPlayCompleted",
+                new System.Collections.Generic.Dictionary<string, string>
+                {
+                    { "GameVersion", demo.Version.ToString() }
+                });
 
             // Unbind the playback keys again.
             Factory.ConfigEditor.UnbindPlaybackKeys(game, demo.Mod);
@@ -255,6 +291,13 @@ namespace DemoManager.App
                         }));
                     });
 
+                TelemetryHelper.Instance.TrackEvent("DemoUploaded",
+                    new System.Collections.Generic.Dictionary<string, string>
+                    {
+                        { "GameVersion", demo.Version.ToString() },
+                        { "DemoName", demo.Name }
+                    });
+
                 await ReloadRepositories();
                 remoteRepositoryView.SelectedDemo = newDemo;
                 remoteRepositoryView.Focus();
@@ -266,6 +309,12 @@ namespace DemoManager.App
             catch (Exception exception)
             {
                 LogHelper.Instance.LogException("Failed to upload demo", exception);
+                TelemetryHelper.Instance.TrackException(exception,
+                    new System.Collections.Generic.Dictionary<string, string>
+                    {
+                        { "Operation", "UploadDemo" },
+                        { "DemoName", demo.Name }
+                    });
 
                 var deepsetException = exception.GetDeepestException();
                 MessageBox.Show(this,
@@ -300,6 +349,13 @@ namespace DemoManager.App
                 var newDemo = await Factory.LocalDemoRepository.Store(demo,
                     p => { statusStrip1.Invoke((MethodInvoker) (() => { progressBar.Value = p; })); });
 
+                TelemetryHelper.Instance.TrackEvent("DemoDownloaded",
+                    new System.Collections.Generic.Dictionary<string, string>
+                    {
+                        { "GameVersion", demo.Version.ToString() },
+                        { "DemoName", demo.Name }
+                    });
+
                 await ReloadRepositories();
                 localRepositoryView.SelectedDemo = newDemo;
                 localRepositoryView.Focus();
@@ -311,6 +367,12 @@ namespace DemoManager.App
             catch (Exception e)
             {
                 LogHelper.Instance.LogException("Failed to download demo", e);
+                TelemetryHelper.Instance.TrackException(e,
+                    new System.Collections.Generic.Dictionary<string, string>
+                    {
+                        { "Operation", "DownloadDemo" },
+                        { "DemoName", demo.Name }
+                    });
 
                 MessageBox.Show(this,
                     $"Failed to download demo.\n{e.GetDeepestException().Message}",

@@ -10,10 +10,6 @@ variable "location" {
   default = "uksouth"
 }
 
-variable "instance" {
-  default = "01"
-}
-
 variable "subscription_id" {}
 
 variable "storage_account_name" {
@@ -22,4 +18,28 @@ variable "storage_account_name" {
 
 variable "tags" {
   default = {}
+}
+
+variable "platform_monitoring_state" {
+  description = "Backend config for platform-monitoring remote state."
+  type = object({
+    resource_group_name  = string
+    storage_account_name = string
+    container_name       = string
+    key                  = string
+    subscription_id      = string
+    tenant_id            = string
+  })
+}
+
+variable "platform_workloads_state" {
+  description = "Backend config for platform-workloads remote state."
+  type = object({
+    resource_group_name  = string
+    storage_account_name = string
+    container_name       = string
+    key                  = string
+    subscription_id      = string
+    tenant_id            = string
+  })
 }

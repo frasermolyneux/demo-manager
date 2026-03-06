@@ -1,10 +1,10 @@
-resource "azurerm_resource_group" "default" {
-  name     = "rg-${var.workload}-${var.environment}-${var.location}-${var.instance}"
-  location = var.location
-  tags     = var.tags
+data "azurerm_resource_group" "rg" {
+  name = local.workload_resource_group.name
 }
 
-import {
-  to = azurerm_resource_group.default
-  id = "/subscriptions/${var.subscription_id}/resourceGroups/rg-${var.workload}-${var.environment}-${var.location}-${var.instance}"
+removed {
+  from = azurerm_resource_group.default
+  lifecycle {
+    destroy = false
+  }
 }

@@ -34,7 +34,9 @@ jobs:
       !failure() && !cancelled()
     permissions:
       contents: read
-    needs: detect-changes
+    needs:
+      - detect-changes
+      - terraform-plan-and-apply-prd
     runs-on: windows-latest
     outputs:
       file_version: ${{ steps.nbgv.outputs.file_version }}
@@ -48,6 +50,15 @@ jobs:
         uses: frasermolyneux/actions/nbgv-metadata@nbgv-metadata/v1
         with:
           perform-checkout: 'false'
+
+      - name: Inject App Insights connection string
+        shell: pwsh
+        run: |
+          $configPath = "src/DemoManager.App/App.config"
+          $content = Get-Content $configPath -Raw
+          $content = $content -replace 'key="ApplicationInsightsConnectionString" value=""', 'key="ApplicationInsightsConnectionString" value="${{ needs.terraform-plan-and-apply-prd.outputs.app_insights_connection_string }}"'
+          Set-Content $configPath $content -NoNewline
+          Write-Host "Injected App Insights connection string into App.config"
 
       - name: Patch AssemblyInfo files
         shell: pwsh
@@ -117,6 +128,7 @@ jobs:
           cd terraform
           echo "resource_group_name=$(terraform output -raw resource_group_name)" >> $GITHUB_OUTPUT
           echo "storage_account_name=$(terraform output -raw storage_account_name)" >> $GITHUB_OUTPUT
+          echo "app_insights_connection_string=$(terraform output -raw app_insights_connection_string)" >> $GITHUB_OUTPUT
         env:
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -127,6 +139,7 @@ jobs:
     outputs:
       resource_group_name: ${{ steps.terraform-output.outputs.resource_group_name }}
       storage_account_name: ${{ steps.terraform-output.outputs.storage_account_name }}
+      app_insights_connection_string: ${{ steps.terraform-output.outputs.app_insights_connection_string }}
 
   upload-artifact-prd:
     if: |
