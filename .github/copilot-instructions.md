@@ -10,7 +10,7 @@ Legacy Windows Forms ClickOnce client that discovers local Call of Duty 2/4/WaW 
 - Solution: `src/DemoManager.sln`
 - Projects: `DemoManager.App` (UI), `DemoManager.Library` (shared parsing/helpers), `DemoManager.Debug` (diagnostics)
 - NuGet packages restored via `packages.config` (Newtonsoft.Json, log4net)
-- Infrastructure: Bicep templates in `bicep/` for Azure artifact storage
+- Infrastructure: Terraform in `terraform/` for Azure resource group and storage account
 
 ## Build & Run
 
@@ -29,9 +29,10 @@ Legacy Windows Forms ClickOnce client that discovers local Call of Duty 2/4/WaW 
 
 ## CI/CD
 
-- GitHub Actions workflows in `.github/workflows/` for build-and-test, code quality, PR verification, merge-to-main, and dependabot automerge
-- Legacy Azure DevOps pipeline in `.azure-pipelines/`
-- Bicep infrastructure templates in `bicep/` with environment parameters in `params/`
+- GitHub Actions workflows in `.github/workflows/` for build-and-test, code quality, PR verification, deploy-prd, merge-to-main, and dependabot automerge
+- Infrastructure: Terraform in `terraform/` with `azurerm` provider, OIDC auth, backend in Azure Storage
+- Terraform manages resource group and storage account for ClickOnce artifact hosting
+- Deploy-prd workflow runs terraform plan+apply on push to main and weekly schedule
 
 ## Conventions
 

@@ -1,0 +1,143 @@
+name: Deploy Prd
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 4"
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  detect-changes:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    outputs:
+      src: ${{ steps.changes.outputs.src }}
+      terraform: ${{ steps.changes.outputs.terraform }}
+    steps:
+      - id: changes
+        uses: frasermolyneux/actions/detect-changes@main
+        with:
+          filters: |
+            src:src/**
+            terraform:terraform/**
+
+  build-clickonce:
+    if: |
+      !failure() && !cancelled()
+    permissions:
+      contents: read
+    needs: detect-changes
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: NuGet Restore
+        run: nuget restore src/DemoManager.sln
+
+      - name: Build and Publish ClickOnce
+        run: |
+          msbuild src/DemoManager.sln /p:Configuration=Release /p:Platform="Any CPU" /target:publish /p:ApplicationVersion=2.3.0.${{ github.run_number }} /p:ProductName="XI Demo Manager" /p:PublishDir="${{ github.workspace }}\publish\\" /p:PublishURL=https://demomanagerclient.blob.core.windows.net/versions/ /p:UpdateEnabled=true /p:UpdateMode=Foreground
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DemoManager
+          path: ${{ github.workspace }}\publish
+
+  terraform-plan-and-apply-prd:
+    permissions:
+      contents: read
+      id-token: write
+    environment: Production
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.repository }}-prd
+    steps:
+      - if: needs.detect-changes.outputs.terraform == 'true' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        uses: frasermolyneux/actions/terraform-plan-and-apply@terraform-plan-and-apply/v1.4
+        with:
+          terraform-folder: "terraform"
+          terraform-var-file: "tfvars/prd.tfvars"
+          terraform-backend-file: "backends/prd.backend.hcl"
+          AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - if: needs.detect-changes.outputs.terraform != 'true' && github.event_name != 'schedule' && github.event_name != 'workflow_dispatch'
+        uses: frasermolyneux/actions/terraform-output@terraform-output/v1.0
+        with:
+          terraform-folder: "terraform"
+          terraform-var-file: "tfvars/prd.tfvars"
+          terraform-backend-file: "backends/prd.backend.hcl"
+          AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - id: terraform-output
+        shell: bash
+        run: |
+          cd terraform
+          echo "resource_group_name=$(terraform output -raw resource_group_name)" >> $GITHUB_OUTPUT
+          echo "storage_account_name=$(terraform output -raw storage_account_name)" >> $GITHUB_OUTPUT
+        env:
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_USE_AZUREAD: true
+          ARM_USE_OIDC: true
+
+    outputs:
+      resource_group_name: ${{ steps.terraform-output.outputs.resource_group_name }}
+      storage_account_name: ${{ steps.terraform-output.outputs.storage_account_name }}
+
+  upload-artifact-prd:
+    if: |
+      !failure() && !cancelled() && needs.build-clickonce.result == 'success'
+    permissions:
+      contents: read
+      id-token: write
+    environment: Production
+    needs:
+      - detect-changes
+      - build-clickonce
+      - terraform-plan-and-apply-prd
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.repository }}-prd
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: DemoManager
+          path: artifact
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Upload to Blob Storage
+        run: |
+          az storage blob upload-batch \
+            --destination versions \
+            --source artifact \
+            --account-name ${{ needs.terraform-plan-and-apply-prd.outputs.storage_account_name }} \
+            --auth-mode login \
+            --overwrite
