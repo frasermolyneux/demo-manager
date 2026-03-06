@@ -36,8 +36,31 @@ jobs:
       contents: read
     needs: detect-changes
     runs-on: windows-latest
+    outputs:
+      file_version: ${{ steps.nbgv.outputs.file_version }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Resolve Nerdbank.GitVersioning metadata
+        id: nbgv
+        uses: frasermolyneux/actions/nbgv-metadata@nbgv-metadata/v1
+        with:
+          perform-checkout: 'false'
+
+      - name: Patch AssemblyInfo files
+        shell: pwsh
+        run: |
+          $version = "${{ steps.nbgv.outputs.file_version }}"
+          Write-Host "Patching AssemblyInfo files with version $version"
+          Get-ChildItem -Path src -Recurse -Filter AssemblyInfo.cs | ForEach-Object {
+            $content = Get-Content $_.FullName -Raw
+            $content = $content -replace '\[assembly: AssemblyVersion\("[^"]*"\)\]', "[assembly: AssemblyVersion(""$version"")]"
+            $content = $content -replace '\[assembly: AssemblyFileVersion\("[^"]*"\)\]', "[assembly: AssemblyFileVersion(""$version"")]"
+            Set-Content $_.FullName $content -NoNewline
+            Write-Host "Patched $($_.FullName)"
+          }
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
@@ -50,7 +73,7 @@ jobs:
 
       - name: Build and Publish ClickOnce
         run: |
-          msbuild src/DemoManager.sln /p:Configuration=Release /p:Platform="Any CPU" /target:publish /p:ApplicationVersion=2.3.0.${{ github.run_number }} /p:ProductName="XI Demo Manager" /p:PublishDir="${{ github.workspace }}\publish\\" /p:PublishURL=https://demomanagerclient.blob.core.windows.net/versions/ /p:UpdateEnabled=true /p:UpdateMode=Foreground
+          msbuild src/DemoManager.sln /p:Configuration=Release /p:Platform="Any CPU" /target:publish /p:ApplicationVersion=${{ steps.nbgv.outputs.file_version }} /p:ProductName="XI Demo Manager" /p:PublishDir="${{ github.workspace }}\publish\\" /p:PublishURL=https://demomanagerclient.blob.core.windows.net/versions/ /p:UpdateEnabled=true /p:UpdateMode=Foreground
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
