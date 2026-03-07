@@ -8,6 +8,7 @@ using DemoManager.App.Configuration;
 using DemoManager.App.Helpers;
 using DemoManager.App.Objects;
 using DemoManager.App.Properties;
+using DemoManager.App.Repositories;
 using Newtonsoft.Json;
 
 // ReSharper disable LocalizableElement
@@ -421,6 +422,22 @@ namespace DemoManager.App
 
             localRepositoryView.Repository = Factory.LocalDemoRepository;
             remoteRepositoryView.Repository = Factory.RemoteDemoRepository;
+
+            try
+            {
+                var displayName = RemoteDemoRepository.WhoAmI();
+                if (!string.IsNullOrWhiteSpace(displayName))
+                    TelemetryHelper.Instance.SetUser(displayName);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Instance.LogException("Failed to resolve user identity", ex);
+                TelemetryHelper.Instance.TrackException(ex,
+                    new System.Collections.Generic.Dictionary<string, string>
+                    {
+                        { "Operation", "WhoAmI" }
+                    });
+            }
 
             await ReloadRepositories();
         }

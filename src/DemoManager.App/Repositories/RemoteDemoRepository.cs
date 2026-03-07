@@ -60,5 +60,17 @@ namespace DemoManager.App.Repositories
 
             return new RemoteDemo(JsonConvert.DeserializeObject<dynamic>(json));
         }
+        public static string WhoAmI()
+        {
+            using (var client = new WebClient())
+            {
+                client.Headers.Add("demo-manager-auth-key", DemoManagerConfiguration.AuthKey);
+
+                var response = client.DownloadString($"{DemoManagerConfiguration.BaseUrl}/WhoAmI");
+                var result = JsonConvert.DeserializeObject<dynamic>(response);
+
+                return result?.displayName?.ToString();
+            }
+        }
     }
 }

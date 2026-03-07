@@ -31,7 +31,9 @@ namespace DemoManager.App.Helpers
 
             client.Context.Session.Id = Guid.NewGuid().ToString();
             client.Context.Device.OperatingSystem = Environment.OSVersion.ToString();
+            client.Context.Device.Id = Environment.MachineName;
             client.Context.Component.Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+            client.Context.GlobalProperties["MachineName"] = Environment.MachineName;
         }
 
         public static TelemetryHelper Instance
@@ -44,6 +46,15 @@ namespace DemoManager.App.Helpers
                     if (instance == null) instance = new TelemetryHelper();
                 }
                 return instance;
+            }
+        }
+
+        public void SetUser(string displayName)
+        {
+            if (!string.IsNullOrWhiteSpace(displayName))
+            {
+                client.Context.User.AuthenticatedUserId = displayName;
+                client.Context.GlobalProperties["DisplayName"] = displayName;
             }
         }
 
