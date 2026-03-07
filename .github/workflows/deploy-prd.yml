@@ -29,6 +29,27 @@ jobs:
             src:src/**
             terraform:terraform/**
 
+  terraform-state-check-prd:
+    if: github.event_name != 'schedule'
+    permissions:
+      contents: read
+      id-token: write
+    environment: Production
+    runs-on: ubuntu-latest
+    outputs:
+      has_resources: ${{ steps.state-check.outputs.has_resources }}
+      state_tainted: ${{ steps.state-check.outputs.state_tainted }}
+    steps:
+      - id: state-check
+        uses: frasermolyneux/actions/terraform-state-check@terraform-state-check/v1.1
+        with:
+          terraform-folder: "terraform"
+          terraform-var-file: "tfvars/prd.tfvars"
+          terraform-backend-file: "backends/prd.backend.hcl"
+          AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
   build-clickonce:
     if: |
       !failure() && !cancelled()
@@ -36,6 +57,7 @@ jobs:
       contents: read
     needs:
       - detect-changes
+      - terraform-state-check-prd
       - terraform-plan-and-apply-prd
     runs-on: windows-latest
     outputs:
@@ -97,12 +119,14 @@ jobs:
       contents: read
       id-token: write
     environment: Production
-    needs: detect-changes
+    needs:
+      - detect-changes
+      - terraform-state-check-prd
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.repository }}-prd
     steps:
-      - if: needs.detect-changes.outputs.terraform == 'true' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+      - if: needs.detect-changes.outputs.terraform == 'true' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || needs.terraform-state-check-prd.outputs.state_tainted == 'true'
         uses: frasermolyneux/actions/terraform-plan-and-apply@terraform-plan-and-apply/v1.4
         with:
           terraform-folder: "terraform"
@@ -112,7 +136,7 @@ jobs:
           AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - if: needs.detect-changes.outputs.terraform != 'true' && github.event_name != 'schedule' && github.event_name != 'workflow_dispatch'
+      - if: needs.detect-changes.outputs.terraform != 'true' && github.event_name != 'schedule' && github.event_name != 'workflow_dispatch' && needs.terraform-state-check-prd.outputs.state_tainted != 'true'
         uses: frasermolyneux/actions/terraform-output@terraform-output/v1.0
         with:
           terraform-folder: "terraform"
