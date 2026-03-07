@@ -16,24 +16,31 @@ namespace DemoManager.App.Helpers
 
         private TelemetryHelper()
         {
-            var connectionString = ConfigurationManager.AppSettings["ApplicationInsightsConnectionString"];
-
-            if (!string.IsNullOrWhiteSpace(connectionString))
+            try
             {
-                var config = TelemetryConfiguration.CreateDefault();
-                config.ConnectionString = connectionString;
-                client = new TelemetryClient(config);
+                var connectionString = ConfigurationManager.AppSettings["ApplicationInsightsConnectionString"];
+
+                if (!string.IsNullOrWhiteSpace(connectionString))
+                {
+                    var config = TelemetryConfiguration.CreateDefault();
+                    config.ConnectionString = connectionString;
+                    client = new TelemetryClient(config);
+                }
+                else
+                {
+                    client = new TelemetryClient(TelemetryConfiguration.CreateDefault());
+                }
+
+                client.Context.Session.Id = Guid.NewGuid().ToString();
+                client.Context.Device.OperatingSystem = Environment.OSVersion.ToString();
+                client.Context.Device.Id = Environment.MachineName;
+                client.Context.Component.Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+                client.Context.GlobalProperties["MachineName"] = Environment.MachineName;
             }
-            else
+            catch
             {
                 client = new TelemetryClient(TelemetryConfiguration.CreateDefault());
             }
-
-            client.Context.Session.Id = Guid.NewGuid().ToString();
-            client.Context.Device.OperatingSystem = Environment.OSVersion.ToString();
-            client.Context.Device.Id = Environment.MachineName;
-            client.Context.Component.Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
-            client.Context.GlobalProperties["MachineName"] = Environment.MachineName;
         }
 
         public static TelemetryHelper Instance
@@ -51,26 +58,54 @@ namespace DemoManager.App.Helpers
 
         public void SetUser(string displayName)
         {
-            if (!string.IsNullOrWhiteSpace(displayName))
+            try
             {
-                client.Context.User.AuthenticatedUserId = displayName;
-                client.Context.GlobalProperties["DisplayName"] = displayName;
+                if (!string.IsNullOrWhiteSpace(displayName))
+                {
+                    client.Context.User.AuthenticatedUserId = displayName;
+                    client.Context.GlobalProperties["DisplayName"] = displayName;
+                }
+            }
+            catch
+            {
+                // Telemetry should never crash the application
             }
         }
 
         public void TrackEvent(string eventName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
         {
-            client.TrackEvent(eventName, properties, metrics);
+            try
+            {
+                client.TrackEvent(eventName, properties, metrics);
+            }
+            catch
+            {
+                // Telemetry should never crash the application
+            }
         }
 
         public void TrackException(Exception exception, IDictionary<string, string> properties = null)
         {
-            client.TrackException(exception, properties);
+            try
+            {
+                client.TrackException(exception, properties);
+            }
+            catch
+            {
+                // Telemetry should never crash the application
+            }
         }
 
         public void Flush()
         {
-            client.Flush();
+            try
+            {
+                client.Flush();
+            }
+            catch
+            {
+                // Telemetry should never crash the application
+            }
         }
     }
 }

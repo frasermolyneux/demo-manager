@@ -9,7 +9,8 @@ namespace DemoManager.App
         [STAThread]
         private static void Main()
         {
-            TelemetryHelper.Instance.TrackEvent("ApplicationStart");
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
 
             AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
             {
@@ -17,8 +18,14 @@ namespace DemoManager.App
                 TelemetryHelper.Instance.Flush();
             };
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            Application.ThreadException += (sender, args) =>
+            {
+                TelemetryHelper.Instance.TrackException(args.Exception);
+                TelemetryHelper.Instance.Flush();
+            };
+
+            TelemetryHelper.Instance.TrackEvent("ApplicationStart");
+
             Application.Run(new FrmMain());
 
             TelemetryHelper.Instance.TrackEvent("ApplicationExit");
