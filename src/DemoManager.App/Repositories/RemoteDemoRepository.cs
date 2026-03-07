@@ -65,8 +65,13 @@ namespace DemoManager.App.Repositories
             using (var client = new WebClient())
             {
                 client.Headers.Add("demo-manager-auth-key", DemoManagerConfiguration.AuthKey);
+                client.Headers.Add("Accept", "application/json");
 
                 var response = client.DownloadString($"{DemoManagerConfiguration.BaseUrl}/WhoAmI");
+
+                if (string.IsNullOrWhiteSpace(response) || !response.TrimStart().StartsWith("{"))
+                    return null;
+
                 var result = JsonConvert.DeserializeObject<dynamic>(response);
 
                 return result?.displayName?.ToString();
