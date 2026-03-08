@@ -45,7 +45,7 @@ jobs:
     concurrency:
       group: ${{ github.repository }}-prd
     env:
-      AZURE_CLIENT_ID: ${{ (github.event.pull_request.user.login == 'dependabot[bot]' || github.event.pull_request.user.login == 'copilot-swe-agent[bot]') && vars.AZURE_PLAN_CLIENT_ID || vars.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
     steps:
