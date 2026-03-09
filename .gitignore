@@ -351,3 +351,18 @@ MigrationBackup/
 
 # Shared Copilot configuration checked out during copilot-setup-steps
 .github-copilot/
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars.backup
+.terraform.lock.hcl
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
