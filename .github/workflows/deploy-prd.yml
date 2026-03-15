@@ -109,7 +109,7 @@ jobs:
           msbuild src/DemoManager.sln /p:Configuration=Release /p:Platform="Any CPU" /target:publish /p:ApplicationVersion=${{ steps.nbgv.outputs.file_version }} /p:ProductName="XI Demo Manager" /p:PublishDir="${{ github.workspace }}\publish\\" /p:PublishURL=https://demomanagerclient.blob.core.windows.net/versions/ /p:UpdateEnabled=true /p:UpdateMode=Foreground
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: DemoManager
           path: ${{ github.workspace }}\publish
@@ -181,7 +181,7 @@ jobs:
       group: ${{ github.repository }}-prd
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: DemoManager
           path: artifact
