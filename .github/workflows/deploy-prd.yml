@@ -115,6 +115,8 @@ jobs:
           path: ${{ github.workspace }}\publish
 
   terraform-plan-and-apply-prd:
+    if: |
+      !failure() && !cancelled()
     permissions:
       contents: read
       id-token: write
