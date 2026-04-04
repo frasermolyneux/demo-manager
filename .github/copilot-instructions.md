@@ -29,7 +29,7 @@ Legacy Windows Forms ClickOnce client that discovers local Call of Duty 2/4/WaW 
 
 ## CI/CD
 
-- GitHub Actions workflows in `.github/workflows/` for build-and-test, code quality, PR verification, deploy-prd, merge-to-main, and dependabot automerge
+- GitHub Actions workflows in `.github/workflows/` for build-and-test, code quality, PR verification, deploy-prd, and dependabot automerge
 - Infrastructure: Terraform in `terraform/` with `azurerm` provider, OIDC auth, backend in Azure Storage
 - Terraform manages resource group and storage account for ClickOnce artifact hosting
 - Deploy-prd workflow runs terraform plan+apply on push to main and weekly schedule
