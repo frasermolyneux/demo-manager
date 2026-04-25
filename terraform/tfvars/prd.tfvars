@@ -1,4 +1,4 @@
-workload    = "demo-manager"
+workload_name = "demo-manager"
 environment = "prd"
 location    = "uksouth"
 

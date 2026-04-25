@@ -27,10 +27,10 @@ resource "azurerm_storage_container" "versions" {
 
 import {
   to = azurerm_storage_account.artifact_storage
-  id = "/subscriptions/${var.subscription_id}/resourceGroups/rg-${var.workload}-${var.environment}-${var.location}/providers/Microsoft.Storage/storageAccounts/${var.storage_account_name}"
+  id = "/subscriptions/${var.subscription_id}/resourceGroups/rg-${var.workload_name}-${var.environment}-${var.location}/providers/Microsoft.Storage/storageAccounts/${var.storage_account_name}"
 }
 
 import {
   to = azurerm_storage_container.versions
-  id = "/subscriptions/${var.subscription_id}/resourceGroups/rg-${var.workload}-${var.environment}-${var.location}/providers/Microsoft.Storage/storageAccounts/${var.storage_account_name}/blobServices/default/containers/versions"
+  id = "/subscriptions/${var.subscription_id}/resourceGroups/rg-${var.workload_name}-${var.environment}-${var.location}/providers/Microsoft.Storage/storageAccounts/${var.storage_account_name}/blobServices/default/containers/versions"
 }

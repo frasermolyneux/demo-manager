@@ -1,5 +1,7 @@
 # Copilot Instructions
 
+> Shared conventions: see [`.github-copilot/.github/instructions/terraform.instructions.md`](../../.github-copilot/.github/instructions/terraform.instructions.md) for the standard Terraform layout, providers, remote-state pattern, validation commands, and CI/CD workflows.
+
 ## Project Overview
 
 Legacy Windows Forms ClickOnce client that discovers local Call of Duty 2/4/WaW installs, reads demo files, and uploads metadata and binaries to the XtremeIdiots portal APIs. The app is in maintenance/decommission mode.

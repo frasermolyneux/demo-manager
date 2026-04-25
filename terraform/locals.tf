@@ -1,7 +1,7 @@
 locals {
   workload_resource_groups = {
     for location in [var.location] :
-    location => data.terraform_remote_state.platform_workloads.outputs.workload_resource_groups[var.workload][var.environment].resource_groups[lower(location)]
+    location => data.terraform_remote_state.platform_workloads.outputs.workload_resource_groups[var.workload_name][var.environment].resource_groups[lower(location)]
   }
 
   workload_resource_group = local.workload_resource_groups[var.location]

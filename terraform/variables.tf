@@ -1,4 +1,4 @@
-variable "workload" {
+variable "workload_name" {
   default = "demo-manager"
 }
 
