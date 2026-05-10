@@ -61,10 +61,10 @@ jobs:
           dotnet tool update dotnet-sonarscanner --tool-path "${{ env.SONAR_SCANNER_DIR }}"
 
       - name: Set up MSBuild
-        uses: microsoft/setup-msbuild@v2
+        uses: microsoft/setup-msbuild@v3
 
       - name: Set up NuGet
-        uses: NuGet/setup-nuget@v2
+        uses: NuGet/setup-nuget@v4
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
@@ -123,7 +123,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
       - name: Dependency Review
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v5
         with:
           comment-summary-in-pr: always
 
