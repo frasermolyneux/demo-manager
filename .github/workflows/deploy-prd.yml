@@ -63,7 +63,7 @@ jobs:
     outputs:
       file_version: ${{ steps.nbgv.outputs.file_version }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           fetch-depth: 0
 
@@ -109,7 +109,7 @@ jobs:
           msbuild src/DemoManager.sln /p:Configuration=Release /p:Platform="Any CPU" /target:publish /p:ApplicationVersion=${{ steps.nbgv.outputs.file_version }} /p:ProductName="XI Demo Manager" /p:PublishDir="${{ github.workspace }}\publish\\" /p:PublishURL=https://demomanagerclient.blob.core.windows.net/versions/ /p:UpdateEnabled=true /p:UpdateMode=Foreground
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: DemoManager
           path: ${{ github.workspace }}\publish
@@ -183,13 +183,13 @@ jobs:
       group: ${{ github.repository }}-prd
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: DemoManager
           path: artifact
 
       - name: Azure Login
-        uses: azure/login@v2
+        uses: azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
