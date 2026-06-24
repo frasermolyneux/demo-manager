@@ -3,8 +3,8 @@
 [![Build and Test](https://github.com/frasermolyneux/demo-manager/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/frasermolyneux/demo-manager/actions/workflows/build-and-test.yml)
 [![Code Quality](https://github.com/frasermolyneux/demo-manager/actions/workflows/codequality.yml/badge.svg)](https://github.com/frasermolyneux/demo-manager/actions/workflows/codequality.yml)
 [![Copilot Setup Steps](https://github.com/frasermolyneux/demo-manager/actions/workflows/copilot-setup-steps.yml/badge.svg)](https://github.com/frasermolyneux/demo-manager/actions/workflows/copilot-setup-steps.yml)
-[![Dependabot Automerge](https://github.com/frasermolyneux/demo-manager/actions/workflows/dependabot-automerge.yml/badge.svg)](https://github.com/frasermolyneux/demo-manager/actions/workflows/dependabot-automerge.yml)
-[![Merge to Main](https://github.com/frasermolyneux/demo-manager/actions/workflows/merge-to-main.yml/badge.svg)](https://github.com/frasermolyneux/demo-manager/actions/workflows/merge-to-main.yml)
+[![Dependabot Auto-Merge](https://github.com/frasermolyneux/demo-manager/actions/workflows/dependabot-automerge.yml/badge.svg)](https://github.com/frasermolyneux/demo-manager/actions/workflows/dependabot-automerge.yml)
+[![Deploy Prd](https://github.com/frasermolyneux/demo-manager/actions/workflows/deploy-prd.yml/badge.svg)](https://github.com/frasermolyneux/demo-manager/actions/workflows/deploy-prd.yml)
 [![PR Verify](https://github.com/frasermolyneux/demo-manager/actions/workflows/pr-verify.yml/badge.svg)](https://github.com/frasermolyneux/demo-manager/actions/workflows/pr-verify.yml)
 
 ## Documentation
