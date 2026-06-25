@@ -31,7 +31,7 @@ namespace DemoManager.Library.Helpers
 
                 if (response.Contains("AuthError"))
                     throw new Exception("AuthError");
-                
+
                 var results = JsonConvert.DeserializeObject<dynamic>(response);
 
                 var demos = new List<IDemo>();
@@ -55,7 +55,7 @@ namespace DemoManager.Library.Helpers
                 client.UploadProgressChanged += (sender, args) => { progressChanged?.Invoke(args.ProgressPercentage); };
 
                 var result = await client.UploadFileTaskAsync($"{baseUrl}/ClientUploadDemo",
-                    "POST", ((LocalDemo) demo).Path);
+                    "POST", ((LocalDemo)demo).Path);
 
                 var resultText = Encoding.ASCII.GetString(result);
 

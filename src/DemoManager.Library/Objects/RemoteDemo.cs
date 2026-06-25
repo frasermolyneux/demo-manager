@@ -118,7 +118,7 @@ namespace DemoManager.Library.Objects
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((RemoteDemo) obj);
+            return Equals((RemoteDemo)obj);
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace DemoManager.Library.Objects
         {
             unchecked
             {
-                var hashCode = (int) Version;
+                var hashCode = (int)Version;
                 hashCode = (hashCode * 397) ^ (Name != null ? Name.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ Date.GetHashCode();
                 hashCode = (hashCode * 397) ^ (Map != null ? Map.GetHashCode() : 0);

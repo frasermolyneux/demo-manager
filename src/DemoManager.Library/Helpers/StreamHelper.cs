@@ -22,7 +22,7 @@ namespace DemoManager.Library.Helpers
 
                 if (size > 0)
                 {
-                    var currentProgress = (int) (100 * progress / size);
+                    var currentProgress = (int)(100 * progress / size);
                     if (progressChanged != null && lastProgress != currentProgress)
                         progressChanged(size == 0 ? 0 : currentProgress);
 

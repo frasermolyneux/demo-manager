@@ -50,7 +50,7 @@ namespace DemoManager.App.Repositories
                 client.UploadProgressChanged += (sender, args) => { progressChanged?.Invoke(args.ProgressPercentage); };
 
                 var result = await client.UploadFileTaskAsync($"{DemoManagerConfiguration.BaseUrl}/ClientUploadDemo",
-                    "POST", ((LocalDemo) demo).Path);
+                    "POST", ((LocalDemo)demo).Path);
 
                 var resultText = Encoding.ASCII.GetString(result);
 

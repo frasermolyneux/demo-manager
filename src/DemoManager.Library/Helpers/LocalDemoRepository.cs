@@ -71,7 +71,7 @@ namespace DemoManager.Library.Helpers
                 // Set the creation date of the file to match the recording date of the demo.
                 File.SetCreationTimeUtc(Path.Combine(localPath, filename), demo.Date);
 
-                return (IDemo) new LocalDemo(Path.Combine(localPath, filename), demo.Version);
+                return (IDemo)new LocalDemo(Path.Combine(localPath, filename), demo.Version);
             });
         }
 

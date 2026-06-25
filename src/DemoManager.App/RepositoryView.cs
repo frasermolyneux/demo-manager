@@ -32,7 +32,7 @@ namespace DemoManager.App
             Sorting = SortOrder.Descending;
 
             SmallImageList = new ImageList();
-            SmallImageList.Images.AddRange(new[] {Resources.desc, Resources.asc});
+            SmallImageList.Images.AddRange(new[] { Resources.desc, Resources.asc });
         }
 
         public IDemoRepository Repository { get; set; }
@@ -94,7 +94,7 @@ namespace DemoManager.App
             Groups.AddRange(demos.Select(demo => demo.Version)
                 .Distinct()
                 .OrderBy(version => version.ToString())
-                .Select(version => new ListViewGroup(version.GetFullName()) {Tag = version})
+                .Select(version => new ListViewGroup(version.GetFullName()) { Tag = version })
                 .ToArray());
 
             Items.AddRange(demos.Select(
@@ -103,7 +103,7 @@ namespace DemoManager.App
                     var item =
                         new ListViewItem(
                             Groups.OfType<ListViewGroup>()
-                                .FirstOrDefault(group => (GameVersion) group.Tag == demo.Version))
+                                .FirstOrDefault(group => (GameVersion)group.Tag == demo.Version))
                         {
                             Tag = demo,
                             Text = demo.Name
@@ -118,7 +118,7 @@ namespace DemoManager.App
                     if (demo.Size < 1024 * 1024)
                         item.SubItems.Add(demo.Size / 1024 + "KB");
                     else
-                        item.SubItems.Add(((double) (demo.Size / 1024) / 1024).ToString("0.00") + "MB");
+                        item.SubItems.Add(((double)(demo.Size / 1024) / 1024).ToString("0.00") + "MB");
                     return item;
                 }).ToArray());
         }
@@ -139,7 +139,7 @@ namespace DemoManager.App
                 if (demo.Size < 1024 * 1024)
                     item.SubItems[6].Text = demo.Size / 1024 + "KB";
                 else
-                    item.SubItems[6].Text = ((double) (demo.Size / 1024) / 1024).ToString("0.00") + "MB";
+                    item.SubItems[6].Text = ((double)(demo.Size / 1024) / 1024).ToString("0.00") + "MB";
             }
         }
 
@@ -157,8 +157,8 @@ namespace DemoManager.App
             public int Compare(object x, object y)
             {
                 return (_sortOrder == SortOrder.Descending ? -1 : 1) *
-                       string.CompareOrdinal(((ListViewItem) x).SubItems[_column].Text,
-                           ((ListViewItem) y).SubItems[_column].Text);
+                       string.CompareOrdinal(((ListViewItem)x).SubItems[_column].Text,
+                           ((ListViewItem)y).SubItems[_column].Text);
             }
         }
     }

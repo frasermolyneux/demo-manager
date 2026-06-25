@@ -15,7 +15,7 @@ namespace DemoManager.App.Reader
 
             var nodes = new List<Node>(Enumerable.Range(0, 256).Select(i => new Node
             {
-                Symbol = (byte) i,
+                Symbol = (byte)i,
                 Frequency = frequencies[i]
             }));
 

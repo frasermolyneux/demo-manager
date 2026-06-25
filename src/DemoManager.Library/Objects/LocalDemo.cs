@@ -194,7 +194,7 @@ namespace DemoManager.Library.Objects
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((LocalDemo) obj);
+            return Equals((LocalDemo)obj);
         }
 
         /// <summary>

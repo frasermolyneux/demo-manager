@@ -74,7 +74,7 @@ namespace DemoManager.Library.Reader
                 var curbits = Math.Min(bits, 8 - _bit);
 
                 // Read the bits from the data and shift them into the result.
-                var read = Data[_readcount] & ((int) Math.Pow(2, curbits) - 1);
+                var read = Data[_readcount] & ((int)Math.Pow(2, curbits) - 1);
 
                 value <<= readBits;
                 value |= read;
@@ -139,8 +139,8 @@ namespace DemoManager.Library.Reader
                 if (c == 0)
                     break;
 
-//                buffer += c > 127 ? '.' : (char)c;
-                buffer += (char) c;
+                //                buffer += c > 127 ? '.' : (char)c;
+                buffer += (char)c;
             }
 
             return buffer;

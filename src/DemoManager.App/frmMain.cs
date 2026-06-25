@@ -285,7 +285,7 @@ namespace DemoManager.App
                 var newDemo = await Factory.RemoteDemoRepository.Store(demo,
                     p =>
                     {
-                        statusStrip1.Invoke((MethodInvoker) (() =>
+                        statusStrip1.Invoke((MethodInvoker)(() =>
                         {
                             if (p < 0) p = 0;
                             progressBar.Value = p;
@@ -348,7 +348,7 @@ namespace DemoManager.App
             try
             {
                 var newDemo = await Factory.LocalDemoRepository.Store(demo,
-                    p => { statusStrip1.Invoke((MethodInvoker) (() => { progressBar.Value = p; })); });
+                    p => { statusStrip1.Invoke((MethodInvoker)(() => { progressBar.Value = p; })); });
 
                 TelemetryHelper.Instance.TrackEvent("DemoDownloaded",
                     new System.Collections.Generic.Dictionary<string, string>
