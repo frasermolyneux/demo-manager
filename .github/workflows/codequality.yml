@@ -77,12 +77,24 @@ jobs:
           languages: csharp
 
       - name: Begin SonarCloud analysis
+        id: sonar-begin
         shell: pwsh
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           Set-Location "${{ github.workspace }}\src"
-          & "${{ env.SONAR_SCANNER_DIR }}\dotnet-sonarscanner" begin /k:"${{ env.SONAR_PROJECT_KEY }}" /o:"${{ env.SONAR_ORGANIZATION }}" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.host.url="${{ env.SONAR_HOST_URL }}"
+          for ($attempt = 1; $attempt -le 3; $attempt++) {
+            & "${{ env.SONAR_SCANNER_DIR }}\dotnet-sonarscanner" begin /k:"${{ env.SONAR_PROJECT_KEY }}" /o:"${{ env.SONAR_ORGANIZATION }}" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.host.url="${{ env.SONAR_HOST_URL }}"
+            if ($LASTEXITCODE -eq 0) {
+              break
+            }
+
+            if ($attempt -eq 3) {
+              throw "SonarCloud analysis initialization failed after $attempt attempts."
+            }
+
+            Start-Sleep -Seconds (15 * $attempt)
+          }
 
       - name: Restore NuGet packages
         shell: pwsh
@@ -97,7 +109,7 @@ jobs:
           msbuild "DemoManager.sln" /p:Configuration=Release /p:Platform="Any CPU"
 
       - name: End SonarCloud analysis
-        if: ${{ always() }}
+        if: ${{ always() && steps.sonar-begin.outcome == 'success' }}
         shell: pwsh
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -132,4 +144,3 @@ jobs:
         uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294
         with:
           comment-summary-in-pr: always
-
