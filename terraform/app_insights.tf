@@ -6,6 +6,7 @@ resource "azurerm_application_insights" "ai" {
 
   application_type = "web"
 
+  ip_masking_enabled   = false
   daily_data_cap_in_gb = 1
   retention_in_days    = 30
   sampling_percentage  = 100
