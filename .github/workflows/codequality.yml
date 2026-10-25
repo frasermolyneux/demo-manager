@@ -72,7 +72,7 @@ jobs:
         uses: NuGet/setup-nuget@v4
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee
+        uses: github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370
         with:
           languages: csharp
 
@@ -118,7 +118,7 @@ jobs:
           & "${{ env.SONAR_SCANNER_DIR }}\dotnet-sonarscanner" end /d:sonar.token="$env:SONAR_TOKEN"
 
       - name: Perform CodeQL analysis
-        uses: github/codeql-action/analyze@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee
+        uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370
         with:
           category: /language:csharp
 
