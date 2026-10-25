@@ -13,11 +13,25 @@ jobs:
   build-and-test:
     permissions:
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
-      - uses: frasermolyneux/actions/dotnet-ci@dotnet-ci/v2
-        with:
-          dotnet-version: |
-            9.0.x
-            10.0.x
-          src-folder: "src"
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Set up MSBuild
+        uses: microsoft/setup-msbuild@v3
+
+      - name: Set up NuGet
+        uses: NuGet/setup-nuget@v4
+
+      - name: Restore NuGet packages
+        shell: pwsh
+        run: |
+          Set-Location "${{ github.workspace }}\src"
+          nuget restore "DemoManager.sln"
+
+      - name: Build solution
+        shell: pwsh
+        run: |
+          Set-Location "${{ github.workspace }}\src"
+          msbuild "DemoManager.sln" /p:Configuration=Release /p:Platform="Any CPU"
