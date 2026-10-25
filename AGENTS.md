@@ -23,7 +23,7 @@ msbuild src/DemoManager.sln /p:Configuration=Release /p:Platform="Any CPU"
 ```pwsh
 # Terraform — single "prd" environment, no dev
 terraform -chdir=terraform fmt -check -recursive
-terraform -chdir=terraform init -backend-config=backends/prd.backend.hcl
+terraform -chdir=terraform init -lockfile=readonly -backend-config=backends/prd.backend.hcl
 terraform -chdir=terraform validate
 terraform -chdir=terraform plan -var-file=tfvars/prd.tfvars
 ```

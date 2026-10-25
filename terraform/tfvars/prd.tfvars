@@ -1,6 +1,6 @@
 workload_name = "demo-manager"
-environment = "prd"
-location    = "uksouth"
+environment   = "prd"
+location      = "uksouth"
 
 subscription_id = "845766d6-b73f-49aa-a9f6-eaf27e20b7a8"
 

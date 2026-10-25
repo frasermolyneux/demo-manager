@@ -42,3 +42,7 @@ Legacy Windows Forms ClickOnce client that discovers local Call of Duty 2/4/WaW 
 - Logging via log4net; config at `DemoManager.App/log4net.config`
 - Be cautious editing Huffman/bit-level parsing logic — small changes can break demo decoding
 - Keep changes minimal; this is a maintenance-mode application
+
+## Terraform toolchain
+
+Commit each root's `.terraform-version` and `.terraform.lock.hcl`. Select the exact root CLI pin before invoking Terraform; normal initialization uses `-lockfile=readonly`. Regenerate provider selections only in a reviewed dependency-update PR; never commit state, plans, or `.terraform/`.
