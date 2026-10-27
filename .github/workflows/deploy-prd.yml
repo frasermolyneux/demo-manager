@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'src/**'
+      - 'terraform/**'
   workflow_dispatch:
   schedule:
     - cron: "0 3 * * 4"
@@ -21,7 +24,6 @@ jobs:
     outputs:
       src: ${{ steps.changes.outputs.src }}
       terraform: ${{ steps.changes.outputs.terraform }}
-      workload: ${{ steps.workload.outputs.src }}
     steps:
       - id: changes
         uses: frasermolyneux/actions/detect-changes@detect-changes/v1.0
@@ -29,19 +31,9 @@ jobs:
           filters: |
             src:src/**
             terraform:terraform/**
-      - name: Detect deployable workload inputs
-        id: workload
-        uses: frasermolyneux/actions/detect-changes@detect-changes/v1.0
-        with:
-          perform-checkout: 'false'
-          filters: |
-            src:src/**,terraform/**
 
   terraform-state-check-prd:
-    needs: [detect-changes]
-    if: |
-      (github.event_name != 'schedule') &&
-      (github.event_name != 'push' || needs.detect-changes.outputs.workload == 'true')
+    if: github.event_name != 'schedule'
     permissions:
       contents: read
       id-token: write
@@ -63,8 +55,7 @@ jobs:
 
   build-clickonce:
     if: |
-      (!failure() && !cancelled()) &&
-      (github.event_name != 'push' || needs.detect-changes.outputs.workload == 'true')
+      !failure() && !cancelled()
     permissions:
       contents: read
     needs:
@@ -128,8 +119,7 @@ jobs:
 
   terraform-plan-and-apply-prd:
     if: |
-      (!failure() && !cancelled()) &&
-      (github.event_name != 'push' || needs.detect-changes.outputs.workload == 'true')
+      !failure() && !cancelled()
     permissions:
       contents: read
       id-token: write
@@ -182,8 +172,7 @@ jobs:
 
   upload-artifact-prd:
     if: |
-      (!failure() && !cancelled() && needs.build-clickonce.result == 'success') &&
-      (github.event_name != 'push' || needs.detect-changes.outputs.workload == 'true')
+      !failure() && !cancelled() && needs.build-clickonce.result == 'success'
     permissions:
       contents: read
       id-token: write
