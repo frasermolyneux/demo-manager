@@ -21,6 +21,7 @@ jobs:
     outputs:
       src: ${{ steps.changes.outputs.src }}
       terraform: ${{ steps.changes.outputs.terraform }}
+      workload: ${{ steps.changes.outputs.workload }}
     steps:
       - id: changes
         uses: frasermolyneux/actions/detect-changes@detect-changes/v1.0
@@ -28,9 +29,12 @@ jobs:
           filters: |
             src:src/**
             terraform:terraform/**
-
+            workload:src/**,terraform/**
   terraform-state-check-prd:
-    if: github.event_name != 'schedule'
+    needs: [detect-changes]
+    if: |
+      (github.event_name != 'schedule') &&
+      (github.event_name != 'push' || needs.detect-changes.outputs.workload == 'true')
     permissions:
       contents: read
       id-token: write
@@ -52,7 +56,8 @@ jobs:
 
   build-clickonce:
     if: |
-      !failure() && !cancelled()
+      (!failure() && !cancelled()) &&
+      (github.event_name != 'push' || needs.detect-changes.outputs.workload == 'true')
     permissions:
       contents: read
     needs:
@@ -116,7 +121,8 @@ jobs:
 
   terraform-plan-and-apply-prd:
     if: |
-      !failure() && !cancelled()
+      (!failure() && !cancelled()) &&
+      (github.event_name != 'push' || needs.detect-changes.outputs.workload == 'true')
     permissions:
       contents: read
       id-token: write
@@ -169,7 +175,8 @@ jobs:
 
   upload-artifact-prd:
     if: |
-      !failure() && !cancelled() && needs.build-clickonce.result == 'success'
+      (!failure() && !cancelled() && needs.build-clickonce.result == 'success') &&
+      (github.event_name != 'push' || needs.detect-changes.outputs.workload == 'true')
     permissions:
       contents: read
       id-token: write
