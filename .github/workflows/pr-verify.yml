@@ -53,7 +53,7 @@ jobs:
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
     steps:
-      - uses: frasermolyneux/actions/terraform-plan@terraform-plan/v2.0.0
+      - uses: frasermolyneux/actions/terraform-plan@terraform-plan/v2.0.1
         with:
           terraform-folder: "terraform"
           terraform-var-file: "tfvars/prd.tfvars"
