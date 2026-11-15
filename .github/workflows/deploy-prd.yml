@@ -26,7 +26,7 @@ jobs:
       terraform: ${{ steps.changes.outputs.terraform }}
     steps:
       - id: changes
-        uses: frasermolyneux/actions/detect-changes@8e7ca58b7821e01192ee4f23756c55e4ee057496 # detect-changes/v1.0.4
+        uses: frasermolyneux/actions/detect-changes@f335f9f14d0062304978193d016f4a43a2e797f4 # detect-changes/v3.0.0
         with:
           filters: |
             src:src/**
@@ -44,7 +44,7 @@ jobs:
       state_tainted: ${{ steps.state-check.outputs.state_tainted }}
     steps:
       - id: state-check
-        uses: frasermolyneux/actions/terraform-state-check@027d7e31bb32b734090aaed01b36d74f1d658b61 # terraform-state-check/v2.0.2
+        uses: frasermolyneux/actions/terraform-state-check@977ddbedf7f5c6e2fae98ff1d6ec6a9c7669d778 # terraform-state-check/v6.0.0
         with:
           terraform-folder: "terraform"
           terraform-var-file: "tfvars/prd.tfvars"
@@ -72,7 +72,7 @@ jobs:
 
       - name: Resolve Nerdbank.GitVersioning metadata
         id: nbgv
-        uses: frasermolyneux/actions/nbgv-metadata@027d7e31bb32b734090aaed01b36d74f1d658b61 # nbgv-metadata/v1.2.1
+        uses: frasermolyneux/actions/nbgv-metadata@977ddbedf7f5c6e2fae98ff1d6ec6a9c7669d778 # nbgv-metadata/v6.0.0
         with:
           perform-checkout: 'false'
 
@@ -132,7 +132,7 @@ jobs:
       group: ${{ github.repository }}-prd
     steps:
       - if: needs.detect-changes.outputs.terraform == 'true' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || needs.terraform-state-check-prd.outputs.state_tainted == 'true'
-        uses: frasermolyneux/actions/terraform-plan-and-apply@027d7e31bb32b734090aaed01b36d74f1d658b61 # terraform-plan-and-apply/v5.0.0
+        uses: frasermolyneux/actions/terraform-plan-and-apply@977ddbedf7f5c6e2fae98ff1d6ec6a9c7669d778 # terraform-plan-and-apply/v6.0.0
         with:
           terraform-folder: "terraform"
           terraform-var-file: "tfvars/prd.tfvars"
@@ -142,7 +142,7 @@ jobs:
           AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - if: needs.detect-changes.outputs.terraform != 'true' && github.event_name != 'schedule' && github.event_name != 'workflow_dispatch' && needs.terraform-state-check-prd.outputs.state_tainted != 'true'
-        uses: frasermolyneux/actions/terraform-output@027d7e31bb32b734090aaed01b36d74f1d658b61 # terraform-output/v2.0.2
+        uses: frasermolyneux/actions/terraform-output@977ddbedf7f5c6e2fae98ff1d6ec6a9c7669d778 # terraform-output/v6.0.0
         with:
           terraform-folder: "terraform"
           terraform-var-file: "tfvars/prd.tfvars"
